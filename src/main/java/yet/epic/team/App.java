@@ -2,10 +2,11 @@ package yet.epic.team;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 public class App 
@@ -38,7 +39,7 @@ public class App
         String[] libFirstLine = new String[result.getNbLibrairies()];
         String[] libSecondLine = new String[result.getNbLibrairies()];
 
-        for (int i = 0; myReader.hasNextLine(); i++) {
+        for (int i = 0; myReader.hasNextLine() && i < result.getNbLibrairies(); i++) {
             libFirstLine[i] = myReader.nextLine();
             inputDataSet += libFirstLine[i] + System.lineSeparator();
             libSecondLine[i] = myReader.nextLine();
@@ -60,19 +61,43 @@ public class App
         return result;
     }
 
+    private static void writeOutputDataSet(String outputDataSet, String outputPath) {
+        OutputStream os = null;
+        try {
+            os = new FileOutputStream(new File(outputPath));
+            os.write(outputDataSet.getBytes(), 0, outputDataSet.length());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+            try {
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void main( String[] args ) throws Exception {
         for (int i = 0; i < inputDataSetLocation.length; i++) {
-            InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") + inputDataSetLocation);
+            InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") + inputDataSetLocation[i]);
             int daysTotal = inputDataSet.getNbOfDays();
             int daysToSignUp = 0;
             int[] dayStartScan = new int[inputDataSet.getLibraries().length];
             int[] bookDone = new int[inputDataSet.getNbBooks()];
             Arrays.fill(bookDone, 0);
+            Library[] resultLibraries = new Library[inputDataSet.getNbLibrairies()];
+            for (int j = 0; j < resultLibraries.length; j++) {
+                resultLibraries[j] = new Library();
+            }
+            ConcurrentLinkedQueue<Integer> signUpOrder = new ConcurrentLinkedQueue<>();
 
             for (int j = 0; j < inputDataSet.getLibraries().length; j++) {
                 Library library = inputDataSet.getLibraries()[i];
                 daysToSignUp += library.getNbDaysToSignup();
+                resultLibraries[j].setDayToSignUp(daysToSignUp);
                 dayStartScan[library.getId()] = daysToSignUp;
+                signUpOrder.add(library.getId());
+
                 int restingDays = daysTotal - dayStartScan[library.getId()];
                 while (restingDays  > 0) {
                     int bookScan = 0;
@@ -82,6 +107,7 @@ public class App
                             if (bookDone[nextBook.getId()] != 1) {
                                 bookDone[nextBook.getId()] = 1;
                                 bookScan++;
+                                resultLibraries[j].addABook(nextBook);
                             }
                         } else
                             break;
@@ -89,7 +115,29 @@ public class App
                     if (! library.hasNextBook())
                         break;
                 }
+                if (library.getBooks().length <= 0) {
+                    daysToSignUp -= library.getNbDaysToSignup();
+                    signUpOrder.remove(library.getId());
+                }
             }
+            StringBuilder finalResult = new StringBuilder();
+            int nbLibrary = 0;
+            for (int j = 0; j < resultLibraries.length; j++) {
+                if (resultLibraries[j].getBooks().length > 0)
+                    nbLibrary++;
+            }
+            finalResult.append(nbLibrary).append(System.lineSeparator());
+            while (!signUpOrder.isEmpty()) {
+                Library currentLibrary = resultLibraries[signUpOrder.poll()];
+                finalResult.append(currentLibrary.getId()).append(currentLibrary.getBooks().length).append(System.lineSeparator());
+                currentLibrary.clearCursor();
+                for (int j = 0; j < currentLibrary.getBooks().length - 1; j++) {
+                    finalResult.append(currentLibrary.nextBook().getId()).append(" ");
+                }
+                finalResult.append(currentLibrary.nextBook().getId()).append(" ").append(System.lineSeparator());
+            }
+            writeOutputDataSet(finalResult.toString(), System.getProperty("user.dir") + inputDataSetLocation[i] + ".out");
+
         }
     }
 }

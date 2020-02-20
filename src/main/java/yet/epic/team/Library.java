@@ -12,6 +12,7 @@ public class Library {
     private Book[] books;
 
     private int bookCursor = 0;
+    private int dayToSignUp = 0;
 
     public Library() {
         this.nbBooks = 0;
@@ -76,11 +77,31 @@ public class Library {
         }
     }
 
+    public void addABook(Book book) {
+        Book[] result = new Book[this.getBooks().length + 1];
+        for (int i = 0; i < this.getBooks().length; i++) {
+            result[i] = this.getBooks()[i];
+        }
+        result[this.getBooks().length] = book;
+        this.setBooks(result);
+    }
+
+    public void clearCursor() {
+        this.bookCursor = 0;
+    }
     public Book nextBook() {
         return this.getBooks()[this.bookCursor++];
     }
     public boolean hasNextBook() {
         return this.bookCursor < this.books.length;
+    }
+
+
+    public void getDayToSignUp() {
+        this.dayToSignUp = dayToSignUp;
+    }
+    public void setDayToSignUp(int dayToSignUp) {
+        this.dayToSignUp = dayToSignUp;
     }
 
     @Override
