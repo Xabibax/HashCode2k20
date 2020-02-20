@@ -2,11 +2,22 @@ package yet.epic.team;
 
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 
 public class App 
 {
+    private static String[] inputDataSetLocation = {
+            "/a_example.txt",
+            "/b_read_on.txt",
+            "/c_incunabula.txt",
+            "/d_tough_choices.txt",
+            "/e_so_many_books.txt",
+            "/f_libraries_of_the_world.txt",
+    };
     private static String inputDataSet;
     private static InputDataSet getInputDataSet(String filePath) throws Exception {
         InputDataSet result = new InputDataSet();
@@ -50,6 +61,35 @@ public class App
     }
 
     public static void main( String[] args ) throws Exception {
-        getInputDataSet(System.getProperty("user.dir") + "\\a_example.txt");
+        for (int i = 0; i < inputDataSetLocation.length; i++) {
+            InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") + inputDataSetLocation);
+            int daysTotal = inputDataSet.getNbOfDays();
+            int daysToSignUp = 0;
+            int[] dayStartScan = new int[inputDataSet.getLibraries().length];
+            int[] bookDone = new int[inputDataSet.getNbBooks()];
+            Arrays.fill(bookDone, 0);
+
+            for (int j = 0; j < inputDataSet.getLibraries().length; j++) {
+                Library library = inputDataSet.getLibraries()[i];
+                daysToSignUp += library.getNbDaysToSignup();
+                dayStartScan[library.getId()] = daysToSignUp;
+                int restingDays = daysTotal - dayStartScan[library.getId()];
+                while (restingDays  > 0) {
+                    int bookScan = 0;
+                    while (bookScan < library.getNbShipBooks()) {
+                        if (library.hasNextBook()) {
+                            Book nextBook = library.nextBook();
+                            if (bookDone[nextBook.getId()] != 1) {
+                                bookDone[nextBook.getId()] = 1;
+                                bookScan++;
+                            }
+                        } else
+                            break;
+                    }
+                    if (! library.hasNextBook())
+                        break;
+                }
+            }
+        }
     }
 }

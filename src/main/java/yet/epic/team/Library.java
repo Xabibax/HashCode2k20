@@ -11,6 +11,8 @@ public class Library {
 
     private Book[] books;
 
+    private int bookCursor = 0;
+
     public Library() {
         this.nbBooks = 0;
         this.nbDaysToSignup = 0;
@@ -72,6 +74,13 @@ public class Library {
             this.books[i].setId(Integer.parseInt(booksScore[i]));
             this.books[i].setScore(bookScore[this.getId()]);
         }
+    }
+
+    public Book nextBook() {
+        return this.getBooks()[this.bookCursor++];
+    }
+    public boolean hasNextBook() {
+        return this.bookCursor < this.books.length;
     }
 
     @Override
