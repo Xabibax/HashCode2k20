@@ -21,10 +21,19 @@ public class Library {
         this.books = new Book[]{};
     }
     public Library(int id, int nbBooks, int nbDaysToSignup, int nbShipBooks, Book[] books) {
+        this.id = id;
         this.nbBooks = nbBooks;
         this.nbDaysToSignup = nbDaysToSignup;
         this.nbShipBooks = nbShipBooks;
         this.books = books;
+    }
+
+    public Library(Library library) {
+        this.id = library.getId();
+        this.nbBooks = library.getNbBooks();
+        this.nbDaysToSignup = library.getNbDaysToSignup();
+        this.nbShipBooks = this.getNbShipBooks();
+        this.books = this.getBooks();
     }
 
     public int getId() {
@@ -64,6 +73,8 @@ public class Library {
     }
 
     public void setBooks(Book[] books) {
+        if (books.length != this.getNbBooks())
+            this.setNbBooks(books.length);
         this.books = books;
     }
 
@@ -97,8 +108,8 @@ public class Library {
     }
 
 
-    public void getDayToSignUp() {
-        this.dayToSignUp = dayToSignUp;
+    public int getDayToSignUp() {
+        return this.dayToSignUp;
     }
     public void setDayToSignUp(int dayToSignUp) {
         this.dayToSignUp = dayToSignUp;
