@@ -1,7 +1,6 @@
 package yet.epic.team;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Books {
@@ -42,6 +41,9 @@ public class Books {
 
     public Book getBook(Integer i) {
         return this.books.get(i);
+    }
+    public List<Book> getBooks() {
+        return this.books;
     }
 
     public void addLibToBook(Book book, Library library) {

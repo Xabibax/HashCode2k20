@@ -57,14 +57,4 @@ public class OutputDataSet {
         }
         return result;
     }
-
-    public int getFinalScore(Books books) {
-        int result = 0;
-        for (int i = 0; i < this.libraries.size(); i++) {
-            for (int j = 0; j < this.libraries.get(i).getNbBooks(); j++) {
-                result += books.getBook(this.libraries.get(i).getBooks().get(j)).getScore();
-            }
-        }
-        return result;
-    }
 }

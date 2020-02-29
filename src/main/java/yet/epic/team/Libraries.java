@@ -80,14 +80,18 @@ public class Libraries {
         return books;
     }
 
+    public Library getBestCapaLib(List<Integer> libId) {
+        Library result = this.libraries.get(libId.get(0));
+        for (int i = 1; i < libId.size(); i++) {
+            if (result.getScanCapacity() < this.libraries.get(libId.get(i)).getScanCapacity())
+                result = this.libraries.get(libId.get(i));
+        }
+        return result;
+    }
+
     public OutputDataSet scanABook(Book book, OutputDataSet outputDataSet) {
-        List<Integer> libraries = book.getLibraries();
         if (book.getLibraries().size() > 0) {
-            Library bestCapaLib = this.getLibrary(libraries.get(0));
-            for (int i = 1; i < libraries.size(); i++) {
-                if (this.getLibrary(libraries.get(i)).getScanCapacity() > bestCapaLib.getScanCapacity())
-                    bestCapaLib = this.getLibrary(libraries.get(i));
-            }
+            Library bestCapaLib = getBestCapaLib(book.getLibraries());
             if (!this.libraries.get(bestCapaLib.getId()).isSignedUp())
                 this.dayOfLastSignedLibrary += this.libraries.get(bestCapaLib.getId()).getDayOfSignUp();
             outputDataSet = this.libraries.get(bestCapaLib.getId()).scanABook(book, outputDataSet);

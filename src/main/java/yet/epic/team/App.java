@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.NumberFormat;
 import java.util.*;
 
 
@@ -55,10 +56,20 @@ public class App
         }
     }
 
+    public static int getScore(List<Book> books) {
+        int result = 0;
+        for (int j = 0; j < books.size(); j++) {
+            result += (books.get(j).getScore());
+        }
+        return result;
+    }
+
     public static void main( String[] args ) throws Exception {
         for (int i = 0; i < inputDataSetLocation.length; i++) {
             System.out.println("Parsing " + inputDataSetLocation[i]);
             InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") + inputDataSetLocation[i]);
+
+            int maxScore = getScore(inputDataSet.getBooks().getBooks());
 
             Books books                 = inputDataSet.getBooks();
             Libraries libraries         = inputDataSet.getLibraries();
@@ -83,18 +94,11 @@ public class App
                 if (libraries.getLibrary(j).getScanCapacity() > 0)
                     libWithScanCapacity++;
             }
-            int finalScore = 0;
-            for (int j = 0; j < bookScanned.size(); j++) {
-                finalScore += bookScanned.get(j).getScore();
-            }
-            int missedScore = 0;
-            for (int j = 0; j < bookNotScanned.size(); j++) {
-                missedScore += bookNotScanned.get(j).getScore();
-            }
             System.out.println("There is " + libWithScanCapacity + " libraries still capable to scan books" + System.lineSeparator() +
                                 "And there is " + bookNotScanned.size() + " books that were not scanned" + System.lineSeparator() +
-                                "The predicted score for " + inputDataSetLocation[i] + " is : " + finalScore + System.lineSeparator() +
-                                "This solution missed " + missedScore + " points");
+                                "The predicted score for " + inputDataSetLocation[i] + " is : " + NumberFormat.getIntegerInstance().format(getScore(bookScanned)) + System.lineSeparator() +
+                                "This solution missed " + NumberFormat.getIntegerInstance().format(getScore(bookNotScanned)) + " points" + System.lineSeparator() +
+                                "If all books were scanned the solution would have scored " + NumberFormat.getIntegerInstance().format(maxScore));
 
             writeOutputDataSet(outputDataSet.toString(), System.getProperty("user.dir") + inputDataSetLocation[i] + ".out");
 
