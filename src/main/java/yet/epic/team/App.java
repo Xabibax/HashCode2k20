@@ -1,13 +1,10 @@
 package yet.epic.team;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 public class App 
@@ -21,43 +18,22 @@ public class App
             "/f_libraries_of_the_world.txt",
     };
     private static String inputDataSet;
+
+
+
     private static InputDataSet getInputDataSet(String filePath) throws Exception {
-        InputDataSet result = new InputDataSet();
 
         File myObj = new File(filePath);
         Scanner myReader = new Scanner(myObj);
 
-        inputDataSet = "";
-        String firstLine = myReader.nextLine();
-        inputDataSet += firstLine + System.lineSeparator();
-        String secondLine = myReader.nextLine();
-        inputDataSet += secondLine + System.lineSeparator();
+        List<String> inputData = new ArrayList<>();
 
-        result.setNbBooks(Integer.parseInt(firstLine.split(" ")[0]));
-        result.setNbLibrairies(Integer.parseInt(firstLine.split(" ")[1]));
-        result.setNbOfDays(Integer.parseInt(firstLine.split(" ")[2]));
-
-        String[] libFirstLine = new String[result.getNbLibrairies()];
-        String[] libSecondLine = new String[result.getNbLibrairies()];
-
-        for (int i = 0; myReader.hasNextLine() && i < result.getNbLibrairies(); i++) {
-            libFirstLine[i] = myReader.nextLine();
-            inputDataSet += libFirstLine[i] + System.lineSeparator();
-            libSecondLine[i] = myReader.nextLine();
-            inputDataSet += libSecondLine[i] + System.lineSeparator();
-        }
+        while (myReader.hasNextLine())
+            inputData.add(myReader.nextLine());
 
         myReader.close();
 
-
-        result.setBookScore(secondLine.split(" "));
-
-        result.setLibraries(libFirstLine, libSecondLine);
-
-        System.out.println(result);
-
-        if (!result.toString().equals(inputDataSet))
-            throw new Exception("Erreur InputDataSet creatyed different from the actual file");
+        InputDataSet result = new InputDataSet(inputData);
 
         return result;
     }
@@ -67,6 +43,7 @@ public class App
         try {
             os = new FileOutputStream(new File(outputPath));
             os.write(outputDataSet.getBytes(), 0, outputDataSet.length());
+            os.close();
         } catch (IOException e) {
             e.printStackTrace();
         }finally{
@@ -80,59 +57,46 @@ public class App
 
     public static void main( String[] args ) throws Exception {
         for (int i = 0; i < inputDataSetLocation.length; i++) {
+            System.out.println("Parsing " + inputDataSetLocation[i]);
             InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") + inputDataSetLocation[i]);
-            int daysTotal = inputDataSet.getNbOfDays();
-            int daysToSignUp = 0;
-            int[] dayStartScan = new int[inputDataSet.getLibraries().length];
-            int[] bookDone = new int[inputDataSet.getNbBooks()];
-            Arrays.fill(bookDone, 0);
-            List<Library> resultLibraries = new ArrayList<>();
-            List<Integer> signUpOrder = new ArrayList<>();
 
-            for (int j = 0; j < inputDataSet.getLibraries().length; j++) {
+            Books books                 = inputDataSet.getBooks();
+            Libraries libraries         = inputDataSet.getLibraries();
+            OutputDataSet outputDataSet = new OutputDataSet();
 
-                Library library = inputDataSet.getLibraries()[j];
-                resultLibraries.add(new Library(library));
-                resultLibraries.get(resultLibraries.size() - 1).setBooks(new Book[]{});
-                daysToSignUp += library.getNbDaysToSignup();
-                dayStartScan[library.getId()] = daysToSignUp;
-
-                int restingDays = daysTotal - dayStartScan[library.getId()];
-                while (restingDays  > 0) {
-                    int bookScan = 0;
-                    while (bookScan < library.getNbShipBooks()) {
-                        if (library.hasNextBook()) {
-                            Book nextBook = library.nextBook();
-                            if (bookDone[nextBook.getId()] != 1) {
-                                bookDone[nextBook.getId()] = 1;
-                                bookScan++;
-                                resultLibraries.get(resultLibraries.size() - 1).addABook(nextBook);
-                            }
-                        } else
-                            break;
-                    }
-                    restingDays--;
-                    if (!resultLibraries.get(resultLibraries.size() - 1).hasNextBook())
-                        break;
+            List<Book> bookNotScanned = new ArrayList<>();
+            List<Book> bookScanned = new ArrayList<>();
+            while (books.size() > 0) {
+                Book mostValuableBook = books.getMostValuableBook();
+                outputDataSet = libraries.scanABook(mostValuableBook, outputDataSet);
+                if (!outputDataSet.asBeenScanned(mostValuableBook)) {
+                    // System.out.println("Couldn't scan this book :" + System.lineSeparator() + mostValuableBook);
+                    bookNotScanned.add(mostValuableBook);
                 }
-                if (resultLibraries.get(resultLibraries.size() - 1).getBooks().length == 0) {
-                    daysToSignUp -= library.getNbDaysToSignup();
-                    resultLibraries.remove(resultLibraries.size() - 1);
-                }
-
+                else
+                    bookScanned.add(mostValuableBook);
+                books.removeABook(mostValuableBook);
+                libraries.removeABookFromLibs(mostValuableBook);
             }
-            StringBuilder finalResult = new StringBuilder();
-            finalResult.append(resultLibraries.size()).append(System.lineSeparator());
-            while (!resultLibraries.isEmpty()) {
-                Library currentLibrary = resultLibraries.remove(0);
-                finalResult.append(currentLibrary.getId()).append(" ").append(currentLibrary.getBooks().length).append(System.lineSeparator());
-                currentLibrary.clearCursor();
-                for (int j = 0; j < currentLibrary.getBooks().length - 1; j++) {
-                    finalResult.append(currentLibrary.nextBook().getId()).append(" ");
-                }
-                finalResult.append(currentLibrary.nextBook().getId()).append(" ").append(System.lineSeparator());
+            int libWithScanCapacity = 0;
+            for (int j = 0; j < libraries.size(); j++) {
+                if (libraries.getLibrary(j).getScanCapacity() > 0)
+                    libWithScanCapacity++;
             }
-            writeOutputDataSet(finalResult.toString(), System.getProperty("user.dir") + inputDataSetLocation[i] + ".out");
+            int finalScore = 0;
+            for (int j = 0; j < bookScanned.size(); j++) {
+                finalScore += bookScanned.get(j).getScore();
+            }
+            int missedScore = 0;
+            for (int j = 0; j < bookNotScanned.size(); j++) {
+                missedScore += bookNotScanned.get(j).getScore();
+            }
+            System.out.println("There is " + libWithScanCapacity + " libraries still capable to scan books" + System.lineSeparator() +
+                                "And there is " + bookNotScanned.size() + " books that were not scanned" + System.lineSeparator() +
+                                "The predicted score for " + inputDataSetLocation[i] + " is : " + finalScore + System.lineSeparator() +
+                                "This solution missed " + missedScore + " points");
+
+            writeOutputDataSet(outputDataSet.toString(), System.getProperty("user.dir") + inputDataSetLocation[i] + ".out");
 
         }
     }

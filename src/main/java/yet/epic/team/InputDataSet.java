@@ -1,45 +1,28 @@
 package yet.epic.team;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class InputDataSet {
-    private int nbBooks;
-    private int nbLibrairies;
+
     private int nbOfDays;
+    private Books books;
+    private Libraries libraries;
 
-    private int[] bookScore;
-
-    private Library[] libraries;
-
-    public InputDataSet() {
-        this.nbBooks = 0;
-        this.nbLibrairies = 0;
-        this.nbOfDays = 0;
-        this.bookScore = new int[]{};
-        this.libraries = new Library[]{};
-    }
-    public InputDataSet(int nbBooks, int nbLibrairies, int nbOfDays, int[] bookScore, Library[] libraries) {
-        this.nbBooks = nbBooks;
-        this.nbLibrairies = nbLibrairies;
-        this.nbOfDays = nbOfDays;
-        this.bookScore = bookScore;
-        this.libraries = libraries;
+    public InputDataSet(List<String> inputData) throws Exception {
+        this.nbOfDays = Integer.parseInt(inputData.get(0).split(" ")[2]);
+        this.books = new Books(inputData.get(1));
+        this.libraries = new Libraries(this.nbOfDays, inputData.subList(2, inputData.size()));
+        this.books = this.getLibraries().updateBooksLocation(this.books);
     }
 
     public int getNbBooks() {
-        return nbBooks;
-    }
-
-    public void setNbBooks(int nbBooks) {
-        this.nbBooks = nbBooks;
+        return this.books.size();
     }
 
     public int getNbLibrairies() {
-        return nbLibrairies;
-    }
-
-    public void setNbLibrairies(int nbLibrairies) {
-        this.nbLibrairies = nbLibrairies;
+        return this.libraries.size();
     }
 
     public int getNbOfDays() {
@@ -50,52 +33,26 @@ public class InputDataSet {
         this.nbOfDays = nbOfDays;
     }
 
-    public int[] getBookScore() {
-        return bookScore;
+    public Books getBooks() {
+        return books;
     }
 
-    public void setBookScore(int[] bookScore) {
-        this.bookScore = bookScore;
-    }
-    public void setBookScore(String[] bookScore) {
-        this.setBookScore(new int[bookScore.length]);
-        for (int i = 0; i < bookScore.length; i++) {
-            this.bookScore[i] = Integer.parseInt(bookScore[i]);
-        }
-    }
-
-    public Library[] getLibraries() {
+    public Libraries getLibraries() {
         return libraries;
-    }
-
-    public void setLibraries(Library[] libraries) {
-        this.libraries = libraries;
-    }
-    public void setLibraries(String[] libFirstLine, String[] libSecondLine) {
-        this.setLibraries(new Library[libFirstLine.length]);
-        for (int i = 0; i < libFirstLine.length; i++) {
-            this.libraries[i] = new Library();
-            this.libraries[i].setId(i);
-            this.libraries[i].setNbBooks(Integer.parseInt(libFirstLine[i].split(" ")[0]));
-            this.libraries[i].setNbDaysToSignup(Integer.parseInt(libFirstLine[i].split(" ")[1]));
-            this.libraries[i].setNbShipBooks(Integer.parseInt(libFirstLine[i].split(" ")[2]));
-
-            this.libraries[i].setBooks(libSecondLine[i], this.getBookScore());
-        }
     }
 
     @Override
     public String toString() {
         String result =  this.getNbBooks() + " " + this.getNbLibrairies() + " " + this.getNbOfDays() +
                 System.lineSeparator();
-        for (int i = 0; i < this.getBookScore().length - 1; i++) {
-            result += this.getBookScore()[i] + " ";
+        for (int i = 0; i < this.getBooks().size() - 1; i++) {
+            result += this.getBooks().getBook(i).getScore() + " ";
         }
-        result += this.getBookScore()[this.getBookScore().length - 1] + System.lineSeparator();
-        for (int i = 0; i < this.getLibraries().length - 1; i++) {
-            result += this.getLibraries()[i] + System.lineSeparator();
+        result += this.getBooks().getBook(this.getNbBooks() - 1).getScore() + System.lineSeparator();
+        for (int i = 0; i < this.getLibraries().size() - 1; i++) {
+            result += this.getLibraries().getLibrary(i) + System.lineSeparator();
         }
-        result += this.getLibraries()[this.getLibraries().length - 1] + System.lineSeparator();
+        result += this.getLibraries().getLibrary(this.getNbLibrairies() - 1) + System.lineSeparator();
         return result;
     }
 }
