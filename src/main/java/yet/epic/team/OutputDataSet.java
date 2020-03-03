@@ -18,10 +18,24 @@ public class OutputDataSet {
         }
         return false;
     }
+    public boolean containBook(Book book) {
+        for (int i = 0; i < this.libraries.size(); i++) {
+            for (int j = 0; j < this.libraries.get(i).getNbBooks(); j++) {
+                if (this.libraries.get(i).getBooks().get(j) == book.getId())
+                    return true;
+            }
+        }
+        return false;
+    }
 
     public void addALibrary(Library library) {
-        this.libraries.add(new Library());
-        this.libraries.get(this.libraries.size() - 1).setId(library.getId());
+        Library lib = new Library();
+        lib.setId(library.getId());
+        lib.setDayOfSignUp(library.getDayOfSignUp());
+        lib.setNbShipBooks(library.getNbShipBooks());
+        lib.setNbDaysToSignup(library.getNbDaysToSignup());
+        lib.setScanCapacity(library.getScanCapacity());
+        this.libraries.add(lib);
     }
 
     public void addABook(Library library, Book book) {
@@ -41,6 +55,10 @@ public class OutputDataSet {
             }
         }
         return false;
+    }
+
+    public List<Library> getLibraries() {
+        return this.libraries;
     }
 
     @Override

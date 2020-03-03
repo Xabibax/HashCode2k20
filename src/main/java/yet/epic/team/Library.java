@@ -24,22 +24,22 @@ public class Library {
     }
 
     public Library(int libId, int totalDayToScanBooks, List<String> inputData) {
-        // First line //
         this.id = libId;
-        this.nbDaysToSignup = Integer.parseInt(inputData.get(0).split(" ")[1]);
-        this.nbShipBooks    = Integer.parseInt(inputData.get(0).split(" ")[2]);
-        this.scanCapacity = (totalDayToScanBooks - (0 + this.nbDaysToSignup)) * this.nbShipBooks;
+        // First line //
+        String[] firstLine = inputData.get(0).split(" ");
+        this.nbDaysToSignup = Integer.parseInt(firstLine[1]);
+        this.nbShipBooks    = Integer.parseInt(firstLine[2]);
+
         // Second line //
         this.books = new ArrayList<>();
         String[] bookContained = inputData.get(1).split(" ");
         for (int i = 0; i < bookContained.length; i++) {
             this.books.add( Integer.parseInt(bookContained[i]));
         }
+
         this.totalDayToScanBooks = totalDayToScanBooks;
         this.dayOfSignUp = 0;
-        // this.scanCapacity = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup)) * this.nbShipBooks;
-        // Just to test
-        this.scanCapacity = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup));
+        this.updateScanCapacity();
     }
 
     public void setId(int id) {
@@ -80,9 +80,11 @@ public class Library {
 
     public void signUp() {
         this.hasSignedUp = true;
-        // this.scanCapacity = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup)) * this.nbShipBooks;
-        // Just to test
-        this.scanCapacity = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup));
+        this.updateScanCapacity();
+    }
+
+    public void updateScanCapacity() {
+        this.scanCapacity = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup)) * this.getNbShipBooks();
     }
 
     public void removeABook(Book book) {
@@ -102,6 +104,10 @@ public class Library {
         return scanCapacity;
     }
 
+    public int getRestingDays() {
+        return scanCapacity/this.getNbShipBooks();
+    }
+
     public OutputDataSet scanABook(Book book, OutputDataSet outputDataSet) {
         if (!this.isSignedUp())
             this.signUp();
@@ -112,6 +118,25 @@ public class Library {
         return outputDataSet;
     }
 
+    public void setNbDaysToSignup(int nbDaysToSignup) {
+        this.nbDaysToSignup = nbDaysToSignup;
+    }
+
+    public void setNbShipBooks(int nbShipBooks) {
+        this.nbShipBooks = nbShipBooks;
+    }
+
+    public void setTotalDayToScanBooks(int totalDayToScanBooks) {
+        this.totalDayToScanBooks = totalDayToScanBooks;
+    }
+
+    public void setHasSignedUp(boolean hasSignedUp) {
+        this.hasSignedUp = hasSignedUp;
+    }
+
+    public void setScanCapacity(int scanCapacity) {
+        this.scanCapacity = scanCapacity;
+    }
 
     @Override
     public String toString() {
@@ -120,7 +145,8 @@ public class Library {
         for (int i = 0; i < this.getBooks().size() - 1; i++) {
             result += this.getBooks().get(i) + System.lineSeparator();
         }
-        result += this.getBooks().get(this.getBooks().size() - 1);
+        if (this.books.size() > 0)
+            result += this.books.get(this.books.size() - 1);
         return result;
     }
 
@@ -129,7 +155,8 @@ public class Library {
         for (int i = 0; i < this.books.size() - 1; i++) {
             result += this.books.get(i) + " ";
         }
-        result += this.books.get(this.books.size() - 1);
+        if (this.books.size() > 0)
+            result += this.books.get(this.books.size() - 1);
         return result;
     }
 

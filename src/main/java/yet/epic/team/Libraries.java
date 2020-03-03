@@ -89,9 +89,23 @@ public class Libraries {
         return result;
     }
 
+    public Library getMostRestDaylib(List<Integer> libId) {
+        Library result = this.libraries.get(libId.get(0));
+        for (int i = 1; i < libId.size(); i++) {
+            if (result.getRestingDays() < this.libraries.get(libId.get(i)).getRestingDays())
+                result = this.libraries.get(libId.get(i));
+        }
+        return result;
+    }
+
+    public Library getBestLib(List<Integer> libId) {
+        return getMostRestDaylib(libId);
+        // return getBestCapaLib(libId);
+    }
+
     public OutputDataSet scanABook(Book book, OutputDataSet outputDataSet) {
         if (book.getLibraries().size() > 0) {
-            Library bestCapaLib = getBestCapaLib(book.getLibraries());
+            Library bestCapaLib = getBestLib(book.getLibraries());
             if (!this.libraries.get(bestCapaLib.getId()).isSignedUp())
                 this.dayOfLastSignedLibrary += this.libraries.get(bestCapaLib.getId()).getDayOfSignUp();
             outputDataSet = this.libraries.get(bestCapaLib.getId()).scanABook(book, outputDataSet);

@@ -99,6 +99,24 @@ public class App
                                 "The predicted score for " + inputDataSetLocation[i] + " is : " + NumberFormat.getIntegerInstance().format(getScore(bookScanned)) + System.lineSeparator() +
                                 "This solution missed " + NumberFormat.getIntegerInstance().format(getScore(bookNotScanned)) + " points" + System.lineSeparator() +
                                 "If all books were scanned the solution would have scored " + NumberFormat.getIntegerInstance().format(maxScore));
+//            System.out.println("There were " + (bookNotScanned.size() + bookScanned.size()) + " books to scan");
+//            for (int j = 0; j < outputDataSet.getLibraries().size(); j++) {
+//                for (int k = 0; k < libraries.size(); k++) {
+//                    if (libraries.getLibrary(k).getId() == outputDataSet.getLibraries().get(j).getId()) {
+//                        System.out.println("The library " + libraries.getLibrary(k).getId() + " has signed up on day " +
+//                                libraries.getLibrary(k).getDayOfSignUp() + " and so had " +
+//                                (libraries.getTotalDayToScanBooks() -
+//                                        (libraries.getLibrary(k).getDayOfSignUp() + libraries.getLibrary(k).getNbDaysToSignup())) + " days to scan its books");
+//                        System.out.println("The library can scan " + libraries.getLibrary(k).getNbShipBooks() + " books by days ");
+//                        System.out.println("It begin with " +
+//                                ((libraries.getTotalDayToScanBooks() -
+//                                        (libraries.getLibrary(k).getDayOfSignUp() + libraries.getLibrary(k).getNbDaysToSignup())) *
+//                                                libraries.getLibrary(k).getNbShipBooks())  +
+//                                " scan capacity and end up with " +  libraries.getLibrary(k).getScanCapacity());
+//                        System.out.println("The library scanned " + outputDataSet.getLibraries().get(j).getBooks().size() + " books");
+//                    }
+//                }
+//            }
 
             writeOutputDataSet(outputDataSet.toString(), System.getProperty("user.dir") + inputDataSetLocation[i] + ".out");
 
