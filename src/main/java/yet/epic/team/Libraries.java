@@ -97,15 +97,33 @@ public class Libraries {
         }
         return result;
     }
+    public Library getFewerSignupDays(List<Integer> libId) {
+        Library result = this.libraries.get(libId.get(0));
+        for (int i = 1; i < libId.size(); i++) {
+            if (result.getNbDaysToSignup() < this.libraries.get(libId.get(i)).getNbDaysToSignup())
+                result = this.libraries.get(libId.get(i));
+        }
+        return result;
+    }
+    public Library getMostValuableLib(List<Integer> libId, Books books) {
+        Library result = this.libraries.get(libId.get(0));
+        for (int i = 1; i < libId.size(); i++) {
+            if (result.getScore(books) < this.libraries.get(libId.get(i)).getScore(books))
+                result = this.libraries.get(libId.get(i));
+        }
+        return result;
+    }
 
-    public Library getBestLib(List<Integer> libId) {
-        return getMostRestDaylib(libId);
+    public Library getBestLib(List<Integer> libId, Books books) {
+        return getMostValuableLib(libId, books);
+        // return getFewerSignupDays(libId);
+        // return getMostRestDaylib(libId);
         // return getBestCapaLib(libId);
     }
 
-    public OutputDataSet scanABook(Book book, OutputDataSet outputDataSet) {
+    public OutputDataSet scanABook(Book book, Books books, OutputDataSet outputDataSet) {
         if (book.getLibraries().size() > 0) {
-            Library bestCapaLib = getBestLib(book.getLibraries());
+            Library bestCapaLib = getBestLib(book.getLibraries(), books);
             if (!this.libraries.get(bestCapaLib.getId()).isSignedUp())
                 this.dayOfLastSignedLibrary += this.libraries.get(bestCapaLib.getId()).getDayOfSignUp();
             outputDataSet = this.libraries.get(bestCapaLib.getId()).scanABook(book, outputDataSet);

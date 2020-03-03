@@ -92,6 +92,14 @@ public class Library {
             this.books.remove((Integer) book.getId());
     }
 
+    public int getScore(Books books) {
+        int result = 0;
+        for (int i = 0; i < this.books.size(); i++) {
+            result += books.getBook(this.books.get(i)).getScore();
+        }
+        return result;
+    }
+
     public int getDayOfSignUp() {
         return dayOfSignUp;
     }
