@@ -42,6 +42,13 @@ public class Books {
     public Book getBook(Integer i) {
         return this.books.get(i);
     }
+    public Book getBookById(Integer i) throws Exception {
+        for (int j = 0; j < this.books.size(); j++) {
+            if (this.books.get(j).getId() == i)
+                return this.books.get(j);
+        }
+        throw new Exception("This book id is unknown");
+    }
     public List<Book> getBooks() {
         return this.books;
     }

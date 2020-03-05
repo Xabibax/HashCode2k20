@@ -105,7 +105,7 @@ public class Libraries {
         }
         return result;
     }
-    public Library getMostValuableLib(List<Integer> libId, Books books) {
+    public Library getMostValuableLib(List<Integer> libId, Books books) throws Exception {
         Library result = this.libraries.get(libId.get(0));
         for (int i = 1; i < libId.size(); i++) {
             if (result.getScore(books) < this.libraries.get(libId.get(i)).getScore(books))
@@ -114,14 +114,14 @@ public class Libraries {
         return result;
     }
 
-    public Library getBestLib(List<Integer> libId, Books books) {
+    public Library getBestLib(List<Integer> libId, Books books) throws Exception {
         return getMostValuableLib(libId, books);
         // return getFewerSignupDays(libId);
         // return getMostRestDaylib(libId);
         // return getBestCapaLib(libId);
     }
 
-    public OutputDataSet scanABook(Book book, Books books, OutputDataSet outputDataSet) {
+    public OutputDataSet scanABook(Book book, Books books, OutputDataSet outputDataSet) throws Exception {
         if (book.getLibraries().size() > 0) {
             Library bestCapaLib = getBestLib(book.getLibraries(), books);
             if (!this.libraries.get(bestCapaLib.getId()).isSignedUp())

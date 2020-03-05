@@ -92,10 +92,10 @@ public class Library {
             this.books.remove((Integer) book.getId());
     }
 
-    public int getScore(Books books) {
+    public int getScore(Books books) throws Exception {
         int result = 0;
         for (int i = 0; i < this.books.size(); i++) {
-            result += books.getBook(this.books.get(i)).getScore();
+            result += books.getBookById(this.books.get(i)).getScore();
         }
         return result;
     }
