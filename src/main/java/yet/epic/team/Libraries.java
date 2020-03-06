@@ -100,7 +100,7 @@ public class Libraries {
     public Library getFewerSignupDays(List<Integer> libId) {
         Library result = this.libraries.get(libId.get(0));
         for (int i = 1; i < libId.size(); i++) {
-            if (result.getNbDaysToSignup() < this.libraries.get(libId.get(i)).getNbDaysToSignup())
+            if (result.getNbDaysToSignup() > this.libraries.get(libId.get(i)).getNbDaysToSignup())
                 result = this.libraries.get(libId.get(i));
         }
         return result;
@@ -115,8 +115,8 @@ public class Libraries {
     }
 
     public Library getBestLib(List<Integer> libId, Books books) throws Exception {
-        return getMostValuableLib(libId, books);
-        // return getFewerSignupDays(libId);
+        // return getMostValuableLib(libId, books);
+        return getFewerSignupDays(libId);
         // return getMostRestDaylib(libId);
         // return getBestCapaLib(libId);
     }

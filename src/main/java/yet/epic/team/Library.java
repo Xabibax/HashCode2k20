@@ -84,7 +84,11 @@ public class Library {
     }
 
     public void updateScanCapacity() {
-        this.scanCapacity = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup)) * this.getNbShipBooks();
+        if (this.totalDayToScanBooks > this.dayOfSignUp)
+            // this.scanCapacity = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup)) * this.getNbShipBooks();
+            this.scanCapacity = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup + 1)) * this.getNbShipBooks();
+        else
+            this.scanCapacity = 0;
     }
 
     public void removeABook(Book book) {

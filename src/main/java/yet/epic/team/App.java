@@ -77,9 +77,10 @@ public class App
 
             List<Book> bookNotScanned = new ArrayList<>();
             List<Book> bookScanned = new ArrayList<>();
+            System.out.print("Remaining books : ");
             while (books.size() > 0) {
                 Book mostValuableBook = books.getMostValuableBook();
-                System.out.println("Remaining books : " + books.size());
+                System.out.print(books.size());
                 outputDataSet = libraries.scanABook(mostValuableBook, books, outputDataSet);
                 if (!outputDataSet.asBeenScanned(mostValuableBook)) {
                     // System.out.println("Couldn't scan this book :" + System.lineSeparator() + mostValuableBook);
