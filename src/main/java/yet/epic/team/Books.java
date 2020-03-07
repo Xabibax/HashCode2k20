@@ -14,6 +14,13 @@ public class Books {
         }
     }
 
+    public Books(Books books) {
+        this.books = new ArrayList<>();
+        for (int i = 0; i < books.size(); i++) {
+            this.books.add(books.getBook(i));
+        }
+    }
+
     public void addABook(Book book) {
         this.books.add(book);
     }

@@ -5,10 +5,10 @@ import java.util.List;
 
 public class Libraries {
     private int totalDayToScanBooks;
-    private int dayOfLastSignedLibrary;
+    private long dayOfLastSignedLibrary;
     private List<Library> libraries;
 
-    public Libraries(int totalDayToScanBooks, List<String> inputData) {
+    public Libraries(int totalDayToScanBooks, List<String> inputData) throws Exception {
         this.totalDayToScanBooks    = totalDayToScanBooks;
         this.dayOfLastSignedLibrary = 0;
         this.libraries = new ArrayList<>();
@@ -44,11 +44,11 @@ public class Libraries {
         this.totalDayToScanBooks = totalDayToScanBooks;
     }
 
-    public int getDayOfLastSignedLibrary() {
+    public long getDayOfLastSignedLibrary() {
         return dayOfLastSignedLibrary;
     }
 
-    public void setDayOfLastSignedLibrary(int dayOfLastSignedLibrary) {
+    public void setDayOfLastSignedLibrary(long dayOfLastSignedLibrary) {
         this.dayOfLastSignedLibrary = dayOfLastSignedLibrary;
     }
 
@@ -80,15 +80,6 @@ public class Libraries {
         return books;
     }
 
-    public Library getBestCapaLib(List<Integer> libId) {
-        Library result = this.libraries.get(libId.get(0));
-        for (int i = 1; i < libId.size(); i++) {
-            if (result.getScanCapacity() < this.libraries.get(libId.get(i)).getScanCapacity())
-                result = this.libraries.get(libId.get(i));
-        }
-        return result;
-    }
-
     public Library getMostRestDaylib(List<Integer> libId) {
         Library result = this.libraries.get(libId.get(0));
         for (int i = 1; i < libId.size(); i++) {
@@ -116,8 +107,8 @@ public class Libraries {
 
     public Library getBestLib(List<Integer> libId, Books books) throws Exception {
         // return getMostValuableLib(libId, books);
-        return getFewerSignupDays(libId);
-        // return getMostRestDaylib(libId);
+        // return getFewerSignupDays(libId);
+        return getMostRestDaylib(libId);
         // return getBestCapaLib(libId);
     }
 

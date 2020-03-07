@@ -6,8 +6,10 @@ import java.util.List;
 public class OutputDataSet {
 
     private List<Library> libraries;
+    private Books books;
 
-    public OutputDataSet() {
+    public OutputDataSet(Books books) {
+        this.books = new Books(books);
         this.libraries = new ArrayList<>();
     }
 
@@ -29,13 +31,8 @@ public class OutputDataSet {
     }
 
     public void addALibrary(Library library) {
-        Library lib = new Library();
-        lib.setId(library.getId());
-        lib.setDayOfSignUp(library.getDayOfSignUp());
-        lib.setNbShipBooks(library.getNbShipBooks());
-        lib.setNbDaysToSignup(library.getNbDaysToSignup());
-        lib.setScanCapacity(library.getScanCapacity());
-        this.libraries.add(lib);
+        this.libraries.add(new Library(library));
+        this.libraries.get(this.libraries.size()-1).setBooks(new ArrayList<Integer>());
     }
 
     public void addABook(Library library, Book book) {
@@ -44,6 +41,7 @@ public class OutputDataSet {
         for (int i = 0; i < this.libraries.size(); i++) {
             if (this.libraries.get(i).getId() == library.getId())
                 this.libraries.get(i).addABook(book);
+                this.libraries.get(i).scanABook();
         }
     }
 
@@ -61,6 +59,16 @@ public class OutputDataSet {
         return this.libraries;
     }
 
+    public int getScore() throws Exception {
+        int result = 0;
+        for (int i = 0; i < this.libraries.size(); i++) {
+            for (int j = 0; j < this.libraries.get(i).getNbBooks(); j++) {
+                result += this.books.getBookById(this.libraries.get(i).getBooks().get(j)).getScore();
+            }
+        }
+        return result;
+    }
+
     @Override
     public String toString() {
         String result = "";
@@ -74,5 +82,19 @@ public class OutputDataSet {
             result += this.libraries.get(i).toDataSetBooks() + System.lineSeparator();
         }
         return result;
+    }
+
+    public String toDebug() {
+        String result = "";
+        // First Line //
+        result += "Number of Libraries : " + this.libraries.size() + System.lineSeparator();
+        // Libraries lines //
+        for (int i = 0; i < this.libraries.size(); i++) {
+
+            // First library line
+            result += this.libraries.get(i).toDebug();
+        }
+        return result;
+
     }
 }

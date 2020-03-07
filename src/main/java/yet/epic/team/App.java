@@ -66,18 +66,20 @@ public class App
 
     public static void main( String[] args ) throws Exception {
         for (int i = 0; i < inputDataSetLocation.length; i++) {
+
             System.out.println("Parsing " + inputDataSetLocation[i]);
             InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") + inputDataSetLocation[i]);
 
             int maxScore = getScore(inputDataSet.getBooks().getBooks());
 
-            Books books                 = inputDataSet.getBooks();
+            Books books                 = new Books(inputDataSet.getBooks());
             Libraries libraries         = inputDataSet.getLibraries();
-            OutputDataSet outputDataSet = new OutputDataSet();
+            OutputDataSet outputDataSet = new OutputDataSet(inputDataSet.getBooks());
 
             List<Book> bookNotScanned = new ArrayList<>();
             List<Book> bookScanned = new ArrayList<>();
             System.out.print("Remaining books : ");
+
             while (books.size() > 0) {
                 Book mostValuableBook = books.getMostValuableBook();
                 System.out.print(books.size());
@@ -91,14 +93,16 @@ public class App
                 books.removeABook(mostValuableBook);
                 libraries.removeABookFromLibs(mostValuableBook);
             }
-            int libWithScanCapacity = 0;
+
+
+            int libWithRestingDays = 0;
             for (int j = 0; j < libraries.size(); j++) {
-                if (libraries.getLibrary(j).getScanCapacity() > 0)
-                    libWithScanCapacity++;
+                if (libraries.getLibrary(j).getRestingDays() > 0)
+                    libWithRestingDays++;
             }
-            System.out.println("There is " + libWithScanCapacity + " libraries still capable to scan books" + System.lineSeparator() +
+            System.out.println("There is " + libWithRestingDays + " libraries still capable to scan books" + System.lineSeparator() +
                                 "And there is " + bookNotScanned.size() + " books that were not scanned" + System.lineSeparator() +
-                                "The predicted score for " + inputDataSetLocation[i] + " is : " + NumberFormat.getIntegerInstance().format(getScore(bookScanned)) + System.lineSeparator() +
+                                "The predicted score for " + inputDataSetLocation[i] + " is : " + NumberFormat.getIntegerInstance().format(outputDataSet.getScore()) + System.lineSeparator() +
                                 "This solution missed " + NumberFormat.getIntegerInstance().format(getScore(bookNotScanned)) + " points" + System.lineSeparator() +
                                 "If all books were scanned the solution would have scored " + NumberFormat.getIntegerInstance().format(maxScore));
 //            System.out.println("There were " + (bookNotScanned.size() + bookScanned.size()) + " books to scan");
@@ -121,6 +125,7 @@ public class App
 //            }
 
             writeOutputDataSet(outputDataSet.toString(), System.getProperty("user.dir") + inputDataSetLocation[i] + ".out");
+            writeOutputDataSet(outputDataSet.toDebug(), System.getProperty("user.dir") + inputDataSetLocation[i] + ".debug");
 
         }
     }
