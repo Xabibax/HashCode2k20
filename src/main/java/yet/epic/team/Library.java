@@ -6,18 +6,19 @@ import java.util.List;
 
 public class Library {
     private int id;
-    private long nbDaysToSignup;
-    private long nbShipBooks;
+    private int nbDaysToSignup;
+    private int nbShipBooks;
 
 
     private int totalDayToScanBooks;
 
     private boolean hasSignedUp;
-    private long dayOfSignUp;
-    private long restingDays;
+    private int dayOfSignUp;
+    private int restingDays;
     private int restingScanForToday;
 
     private List<Integer> books;
+    private List<Integer> scannedBooks = new ArrayList<>();
 
 
     public Library() {
@@ -26,7 +27,7 @@ public class Library {
         this.books = new ArrayList<Integer>(){};
     }
 
-    public Library(Library lib) {
+    public Library(Library lib) throws Exception {
         this.id = lib.getId();
         this.nbDaysToSignup = lib.getNbDaysToSignup();
         this.nbShipBooks = lib.getNbShipBooks();
@@ -41,6 +42,10 @@ public class Library {
         this.books = new ArrayList<Integer>(){};
         for (int i = 0; i < lib.getNbBooks(); i++) {
             this.books.add(lib.getBooks().get(i));
+        }
+        this.scannedBooks = new ArrayList<Integer>(){};
+        for (int i = 0; i < lib.getNbBooks(); i++) {
+            this.scannedBooks.add(lib.getScannedBooks().get(i));
         }
     }
 
@@ -60,10 +65,15 @@ public class Library {
 
         this.totalDayToScanBooks = totalDayToScanBooks;
         this.dayOfSignUp = 0;
+
+        this.restingScanForToday = this.nbShipBooks;
+
         this.updateRestingDays();
     }
 
-    public long getRestingDays() {
+    public int getRestingDays() throws Exception {
+        if (restingDays < 0)
+            throw new Exception("");
         return restingDays;
     }
 
@@ -98,11 +108,11 @@ public class Library {
         return this.books.size();
     }
 
-    public long getNbDaysToSignup() {
+    public int getNbDaysToSignup() {
         return nbDaysToSignup;
     }
 
-    public long getNbShipBooks() {
+    public int getNbShipBooks() {
         return nbShipBooks;
     }
 
@@ -128,8 +138,8 @@ public class Library {
     }
 
     public void updateRestingDays() throws Exception {
-        if (this.totalDayToScanBooks > this.dayOfSignUp) {
-            this.restingDays = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup));
+        if ((this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup + 1)) > 0) {
+            this.restingDays = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup + 1));
         }
         else
             this.restingDays = 0;
@@ -148,7 +158,7 @@ public class Library {
         return result;
     }
 
-    public void setRestingDays(long restingDays) {
+    public void setRestingDays(int restingDays) {
         this.restingDays = restingDays;
     }
 
@@ -156,38 +166,43 @@ public class Library {
         this.restingScanForToday = restingScanForToday;
     }
 
-    public long getDayOfSignUp() {
+    public int getDayOfSignUp() {
         return dayOfSignUp;
     }
 
-    public void setDayOfSignUp(long i) {
+    public void setDayOfSignUp(int i) {
         this.dayOfSignUp = i;
     }
 
-    public void scanABook() {
-        if (this.restingScanForToday >= this.getNbShipBooks()) {
-            this.restingScanForToday = 0;
+    public void scanABook() throws Exception {
+        if (this.restingScanForToday <= 0) {
+            this.restingScanForToday = this.getNbShipBooks() - 1;
             this.restingDays --;
+            if (this.restingDays < 0)
+                throw new Exception("");
         }
         else
-            this.restingScanForToday++;
+            this.restingScanForToday--;
     }
 
-    public OutputDataSet scanABook(Book book, OutputDataSet outputDataSet) throws Exception {
+    public List<Integer> getScannedBooks() {
+        return scannedBooks;
+    }
+
+    public void scanABook(Book book) throws Exception {
         if (!this.isSignedUp())
             this.signUp();
         if (this.restingDays > 0) {
             scanABook();
-            outputDataSet.addABook(this, book);
+            this.scannedBooks.add(book.getId());
         }
-        return outputDataSet;
     }
 
-    public void setNbDaysToSignup(long nbDaysToSignup) {
+    public void setNbDaysToSignup(int nbDaysToSignup) {
         this.nbDaysToSignup = nbDaysToSignup;
     }
 
-    public void setNbShipBooks(long nbShipBooks) {
+    public void setNbShipBooks(int nbShipBooks) {
         this.nbShipBooks = nbShipBooks;
     }
 
@@ -222,19 +237,27 @@ public class Library {
         return result;
     }
 
-    public String toDebug() {
+    public String toDataSetBooksBis() {
+        String result = "";
+        for (int i = 0; i < this.scannedBooks.size() - 1; i++) {
+            result += this.scannedBooks.get(i) + " ";
+        }
+        if (this.scannedBooks.size() > 0)
+            result += this.scannedBooks.get(this.scannedBooks.size() - 1);
+        return result;
+    }
+
+    public String toDebug() throws Exception {
         String result = "";
         result += "Library : " + this.getId() + System.lineSeparator();
         result += "SignUp day : " + this.getDayOfSignUp() + " and need " + this.getNbDaysToSignup() + " days to signup" +  System.lineSeparator();
         result += "Resting days to scan : " + (this.getTotalDayToScanBooks() - (this.getDayOfSignUp() + this.getNbDaysToSignup())) + System.lineSeparator();
         result += "Number of books scan a day : " + this.getNbShipBooks() + System.lineSeparator();
 
-        result += "Calculated scanned days : " + (this.getNbBooks() / this.getNbShipBooks() ) + System.lineSeparator();
+        result += "Calculated scanned days : " + (this.getScannedBooks().size() / this.getNbShipBooks() ) + System.lineSeparator();
         result += "Resting days : " + this.getRestingDays() + System.lineSeparator();
 
-        result += this.getId() +  " " + this.getNbBooks() + System.lineSeparator();
-        // Second library line
-        result += this.toDataSetBooks() + System.lineSeparator();
+        result += this.getId() +  " " + this.getScannedBooks().size() + System.lineSeparator();
         return result;
     }
 

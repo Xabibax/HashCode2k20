@@ -30,18 +30,20 @@ public class OutputDataSet {
         return false;
     }
 
-    public void addALibrary(Library library) {
-        this.libraries.add(new Library(library));
-        this.libraries.get(this.libraries.size()-1).setBooks(new ArrayList<Integer>());
+    public void addALibrary(Library library) throws Exception {
+        if (!this.containLib(library)) {
+            this.libraries.add(library);
+        }
     }
 
-    public void addABook(Library library, Book book) {
+    public void addABook(Library library, Book book) throws Exception {
         if (!this.containLib(library))
             this.addALibrary(library);
         for (int i = 0; i < this.libraries.size(); i++) {
-            if (this.libraries.get(i).getId() == library.getId())
+            if (this.libraries.get(i).getId() == library.getId()) {
                 this.libraries.get(i).addABook(book);
                 this.libraries.get(i).scanABook();
+            }
         }
     }
 
@@ -62,8 +64,8 @@ public class OutputDataSet {
     public int getScore() throws Exception {
         int result = 0;
         for (int i = 0; i < this.libraries.size(); i++) {
-            for (int j = 0; j < this.libraries.get(i).getNbBooks(); j++) {
-                result += this.books.getBookById(this.libraries.get(i).getBooks().get(j)).getScore();
+            for (int j = 0; j < this.libraries.get(i).getScannedBooks().size(); j++) {
+                result += this.books.getBookById(this.libraries.get(i).getScannedBooks().get(j)).getScore();
             }
         }
         return result;
@@ -83,8 +85,21 @@ public class OutputDataSet {
         }
         return result;
     }
+    public String toDataSet() {
+        String result = "";
+        // First Line //
+        result +=  this.libraries.size() + System.lineSeparator();
+        // Libraries lines //
+        for (int i = 0; i < this.libraries.size(); i++) {
+            // First library line
+            result += this.libraries.get(i).getId() +  " " + this.libraries.get(i).getScannedBooks().size() + System.lineSeparator();
+            // Second library line
+            result += this.libraries.get(i).toDataSetBooksBis() + System.lineSeparator();
+        }
+        return result;
+    }
 
-    public String toDebug() {
+    public String toDebug() throws Exception {
         String result = "";
         // First Line //
         result += "Number of Libraries : " + this.libraries.size() + System.lineSeparator();

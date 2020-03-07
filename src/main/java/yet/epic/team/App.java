@@ -67,8 +67,23 @@ public class App
     public static void main( String[] args ) throws Exception {
         for (int i = 0; i < inputDataSetLocation.length; i++) {
 
+            switch (i) {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+            }
             System.out.println("Parsing " + inputDataSetLocation[i]);
-            InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") + inputDataSetLocation[i]);
+            InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") +
+                    inputDataSetLocation[i]);
 
             int maxScore = getScore(inputDataSet.getBooks().getBooks());
 
@@ -78,54 +93,31 @@ public class App
 
             List<Book> bookNotScanned = new ArrayList<>();
             List<Book> bookScanned = new ArrayList<>();
-            System.out.print("Remaining books : ");
+            //System.out.print("Remaining books : ");
 
             while (books.size() > 0) {
                 Book mostValuableBook = books.getMostValuableBook();
-                System.out.print(books.size());
-                outputDataSet = libraries.scanABook(mostValuableBook, books, outputDataSet);
-                if (!outputDataSet.asBeenScanned(mostValuableBook)) {
-                    // System.out.println("Couldn't scan this book :" + System.lineSeparator() + mostValuableBook);
-                    bookNotScanned.add(mostValuableBook);
-                }
-                else
-                    bookScanned.add(mostValuableBook);
+                //System.out.print(books.size());
+                libraries.scanABook(mostValuableBook, books);
                 books.removeABook(mostValuableBook);
                 libraries.removeABookFromLibs(mostValuableBook);
             }
 
-
-            int libWithRestingDays = 0;
-            for (int j = 0; j < libraries.size(); j++) {
-                if (libraries.getLibrary(j).getRestingDays() > 0)
-                    libWithRestingDays++;
+            while (libraries.size() > 0) {
+                Library library = libraries.getMostRecentSignupLib();
+                if (library.getScannedBooks().size() > 0)
+                    outputDataSet.addALibrary(library);
+                libraries.removeALibrary(library);
             }
-            System.out.println("There is " + libWithRestingDays + " libraries still capable to scan books" + System.lineSeparator() +
-                                "And there is " + bookNotScanned.size() + " books that were not scanned" + System.lineSeparator() +
-                                "The predicted score for " + inputDataSetLocation[i] + " is : " + NumberFormat.getIntegerInstance().format(outputDataSet.getScore()) + System.lineSeparator() +
-                                "This solution missed " + NumberFormat.getIntegerInstance().format(getScore(bookNotScanned)) + " points" + System.lineSeparator() +
-                                "If all books were scanned the solution would have scored " + NumberFormat.getIntegerInstance().format(maxScore));
-//            System.out.println("There were " + (bookNotScanned.size() + bookScanned.size()) + " books to scan");
-//            for (int j = 0; j < outputDataSet.getLibraries().size(); j++) {
-//                for (int k = 0; k < libraries.size(); k++) {
-//                    if (libraries.getLibrary(k).getId() == outputDataSet.getLibraries().get(j).getId()) {
-//                        System.out.println("The library " + libraries.getLibrary(k).getId() + " has signed up on day " +
-//                                libraries.getLibrary(k).getDayOfSignUp() + " and so had " +
-//                                (libraries.getTotalDayToScanBooks() -
-//                                        (libraries.getLibrary(k).getDayOfSignUp() + libraries.getLibrary(k).getNbDaysToSignup())) + " days to scan its books");
-//                        System.out.println("The library can scan " + libraries.getLibrary(k).getNbShipBooks() + " books by days ");
-//                        System.out.println("It begin with " +
-//                                ((libraries.getTotalDayToScanBooks() -
-//                                        (libraries.getLibrary(k).getDayOfSignUp() + libraries.getLibrary(k).getNbDaysToSignup())) *
-//                                                libraries.getLibrary(k).getNbShipBooks())  +
-//                                " scan capacity and end up with " +  libraries.getLibrary(k).getScanCapacity());
-//                        System.out.println("The library scanned " + outputDataSet.getLibraries().get(j).getBooks().size() + " books");
-//                    }
-//                }
-//            }
 
-            writeOutputDataSet(outputDataSet.toString(), System.getProperty("user.dir") + inputDataSetLocation[i] + ".out");
-            writeOutputDataSet(outputDataSet.toDebug(), System.getProperty("user.dir") + inputDataSetLocation[i] + ".debug");
+            System.out.println("The predicted score for " + inputDataSetLocation[i] + " is : " +
+                    NumberFormat.getIntegerInstance().format(outputDataSet.getScore()) + System.lineSeparator());
+
+
+            writeOutputDataSet(outputDataSet.toDataSet(), System.getProperty("user.dir") +
+                    inputDataSetLocation[i] + ".out");
+            writeOutputDataSet(outputDataSet.toDebug(), System.getProperty("user.dir") +
+                    inputDataSetLocation[i] + ".debug");
 
         }
     }
