@@ -22,8 +22,8 @@ public class OutputDataSet {
     }
     public boolean containBook(Book book) {
         for (int i = 0; i < this.libraries.size(); i++) {
-            for (int j = 0; j < this.libraries.get(i).getNbBooks(); j++) {
-                if (this.libraries.get(i).getBooks().get(j) == book.getId())
+            for (int j = 0; j < this.libraries.get(i).getBooks().size(); j++) {
+                if (this.libraries.get(i).getBooks().get(j).getId() == book.getId())
                     return true;
             }
         }
@@ -49,8 +49,8 @@ public class OutputDataSet {
 
     public boolean asBeenScanned(Book book) {
         for (int i = 0; i < this.libraries.size(); i++) {
-            for (int j = 0; j < this.libraries.get(i).getNbBooks(); j++) {
-                if (this.libraries.get(i).getBooks().get(j) == book.getId())
+            for (int j = 0; j < this.libraries.get(i).getBooks().size(); j++) {
+                if (this.libraries.get(i).getBooks().get(j).getId() == book.getId())
                     return true;
             }
         }
@@ -65,7 +65,7 @@ public class OutputDataSet {
         int result = 0;
         for (int i = 0; i < this.libraries.size(); i++) {
             for (int j = 0; j < this.libraries.get(i).getScannedBooks().size(); j++) {
-                result += this.books.getBookById(this.libraries.get(i).getScannedBooks().get(j)).getScore();
+                result += this.libraries.get(i).getScore();
             }
         }
         return result;
@@ -79,7 +79,7 @@ public class OutputDataSet {
         // Libraries lines //
         for (int i = 0; i < this.libraries.size(); i++) {
             // First library line
-            result += this.libraries.get(i).getId() +  " " + this.libraries.get(i).getNbBooks() + System.lineSeparator();
+            result += this.libraries.get(i).getId() +  " " + this.libraries.get(i).getBooks().size() + System.lineSeparator();
             // Second library line
             result += this.libraries.get(i).toDataSetBooks() + System.lineSeparator();
         }

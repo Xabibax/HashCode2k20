@@ -8,13 +8,13 @@ public class Libraries {
     private int dayOfLastSignedLibrary;
     private List<Library> libraries;
 
-    public Libraries(int totalDayToScanBooks, List<String> inputData) throws Exception {
+    public Libraries(int totalDayToScanBooks, Books books, List<String> inputData) throws Exception {
         this.totalDayToScanBooks    = totalDayToScanBooks;
         this.dayOfLastSignedLibrary = 0;
         this.libraries = new ArrayList<>();
         for (int i = 0; i < inputData.size() - 1; i += 2) {
             this.addALibrary(
-                    new Library(i/2, totalDayToScanBooks, inputData.subList(i, i + 2))
+                new Library(i/2, totalDayToScanBooks, books, inputData.subList(i, i + 2))
             );
         }
     }
@@ -69,16 +69,6 @@ public class Libraries {
     public void addBookToLib(Library library, Book book) {
         this.libraries.get(library.getId()).addABook(book);
     }
-    public Books updateBooksLocation(Books books) {
-        for (int i = 0; i < libraries.size(); i++) {
-            for (int j = 0; j < libraries.get(i).getNbBooks(); j++) {
-                Library library = libraries.get(i);
-                Book book       = books.getBook(library.getBooks().get(j));
-                books.addLibToBook(book, library);
-            }
-        }
-        return books;
-    }
 
     public Library getMostRestDaylib(List<Integer> libId) throws Exception {
         Library result = this.libraries.get(libId.get(0));
@@ -96,19 +86,19 @@ public class Libraries {
         }
         return result;
     }
-    public Library getMostValuableLib(List<Integer> libId, Books books) throws Exception {
+    public Library getMostValuableLib(List<Integer> libId) throws Exception {
         Library result = this.libraries.get(libId.get(0));
         for (int i = 1; i < libId.size(); i++) {
-            if (result.getScore(books) < this.libraries.get(libId.get(i)).getScore(books))
+            if (result.getScore() < this.libraries.get(libId.get(i)).getScore())
                 result = this.libraries.get(libId.get(i));
         }
         return result;
     }
 
-    public Library getBestLib(List<Integer> libId, Books books) throws Exception {
-        return getMostValuableLib(libId, books);
+    public Library getBestLib(List<Integer> libId) throws Exception {
+        //return getMostValuableLib(libId);
         //return getFewerSignupDays(libId);
-        //return getMostRestDaylib(libId);
+        return getMostRestDaylib(libId);
     }
 
     public Library getMostRecentSignupLib() {
@@ -129,7 +119,7 @@ public class Libraries {
 
     public void scanABook(Book book, Books books) throws Exception {
         if (book.getLibraries().size() > 0) {
-            Library bestCapaLib = getBestLib(book.getLibraries(), books);
+            Library bestCapaLib = getBestLib(book.getLibraries());
             if (!this.libraries.get(bestCapaLib.getId()).isSignedUp())
                 this.dayOfLastSignedLibrary += this.libraries.get(bestCapaLib.getId()).getNbDaysToSignup();
             this.libraries.get(bestCapaLib.getId()).scanABook(book);

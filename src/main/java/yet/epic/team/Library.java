@@ -9,7 +9,6 @@ public class Library {
     private int nbDaysToSignup;
     private int nbShipBooks;
 
-
     private int totalDayToScanBooks;
 
     private boolean hasSignedUp;
@@ -17,15 +16,8 @@ public class Library {
     private int restingDays;
     private int restingScanForToday;
 
-    private List<Integer> books;
-    private List<Integer> scannedBooks = new ArrayList<>();
-
-
-    public Library() {
-        this.nbDaysToSignup = 0;
-        this.nbShipBooks = 0;
-        this.books = new ArrayList<Integer>(){};
-    }
+    private List<Book> books        = new ArrayList<>();
+    private List<Book> scannedBooks = new ArrayList<>();
 
     public Library(Library lib) throws Exception {
         this.id = lib.getId();
@@ -39,17 +31,12 @@ public class Library {
         this.restingDays = lib.getRestingDays();
         this.restingScanForToday = lib.getRestingScanForToday();
 
-        this.books = new ArrayList<Integer>(){};
-        for (int i = 0; i < lib.getNbBooks(); i++) {
-            this.books.add(lib.getBooks().get(i));
-        }
-        this.scannedBooks = new ArrayList<Integer>(){};
-        for (int i = 0; i < lib.getNbBooks(); i++) {
-            this.scannedBooks.add(lib.getScannedBooks().get(i));
-        }
+        this.books = lib.getBooks();
+
+        this.scannedBooks = lib.getScannedBooks();
     }
 
-    public Library(int libId, int totalDayToScanBooks, List<String> inputData) throws Exception {
+    public Library(int libId, int totalDayToScanBooks, Books books, List<String> inputData) throws Exception {
         this.id = libId;
         // First line //
         String[] firstLine = inputData.get(0).split(" ");
@@ -60,7 +47,7 @@ public class Library {
         this.books = new ArrayList<>();
         String[] bookContained = inputData.get(1).split(" ");
         for (int i = 0; i < bookContained.length; i++) {
-            this.books.add( Integer.parseInt(bookContained[i]));
+            this.books.add(books.getBookById(Integer.parseInt(bookContained[i])));
         }
 
         this.totalDayToScanBooks = totalDayToScanBooks;
@@ -81,7 +68,7 @@ public class Library {
         return totalDayToScanBooks;
     }
 
-    public void setBooks(List<Integer> books) {
+    public void setBooks(List<Book> books) {
         this.books = books;
     }
 
@@ -104,10 +91,6 @@ public class Library {
         return id;
     }
 
-    public int getNbBooks() {
-        return this.books.size();
-    }
-
     public int getNbDaysToSignup() {
         return nbDaysToSignup;
     }
@@ -116,12 +99,12 @@ public class Library {
         return nbShipBooks;
     }
 
-    public List<Integer> getBooks() {
+    public List<Book> getBooks() {
         return books;
     }
 
     public void addABook(Book book) {
-        this.books.add(book.getId());
+        this.books.add(book);
     }
 
     public boolean containBook(Book book) {
@@ -146,14 +129,13 @@ public class Library {
     }
 
     public void removeABook(Book book) {
-        if (this.books.contains(book.getId()))
-            this.books.remove((Integer) book.getId());
+        this.books.remove(book);
     }
 
-    public int getScore(Books books) throws Exception {
+    public int getScore() throws Exception {
         int result = 0;
-        for (int i = 0; i < this.books.size(); i++) {
-            result += books.getBookById(this.books.get(i)).getScore();
+        for (Book book : this.books) {
+            result += book.getScore();
         }
         return result;
     }
@@ -185,7 +167,7 @@ public class Library {
             this.restingScanForToday--;
     }
 
-    public List<Integer> getScannedBooks() {
+    public List<Book> getScannedBooks() {
         return scannedBooks;
     }
 
@@ -194,7 +176,7 @@ public class Library {
             this.signUp();
         if (this.restingDays > 0) {
             scanABook();
-            this.scannedBooks.add(book.getId());
+            this.scannedBooks.add(book);
         }
     }
 

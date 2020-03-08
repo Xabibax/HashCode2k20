@@ -21,8 +21,7 @@ public class InputDataSet {
             maxScore += Integer.parseInt(booksScore[i]);
         }
         System.out.println("From the input data the maximum score possible is " + NumberFormat.getIntegerInstance().format(maxScore) + " points");
-        this.libraries = new Libraries(this.nbOfDays, inputData.subList(2, inputData.size()));
-        this.books = this.getLibraries().updateBooksLocation(this.books);
+        this.libraries = new Libraries(this.nbOfDays, this.books, inputData.subList(2, inputData.size()));
         if (nbBooks != this.books.size() || nbLibraries != this.libraries.size())
             throw new Exception("There a difference between Input file and intern variables");
     }
