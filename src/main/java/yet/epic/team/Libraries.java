@@ -84,6 +84,25 @@ public class Libraries {
         return result;
     }
 
+    public Library getMostValuableAndMostCapaLib() throws Exception {
+        Library result =  this.libraries.get(0);
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            if (result.getScore() < ( this.libraries.get(i).getScore()))
+                if (result.getScanCapacity() < this.libraries.get(i).getScanCapacity())
+                    result =  this.libraries.get(i);
+        }
+        return result;
+    }
+
+    public Library getWorthyLib() throws Exception {
+        Library result =  this.libraries.get(0);
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            if (result.getWorth() < ( this.libraries.get(i).getWorth()))
+                result =  this.libraries.get(i);
+        }
+        return result;
+    }
+
     public Library getQuickerSignUpLib() throws Exception {
         Library result =  this.libraries.get(0);
         for (int i = 1; i <  this.libraries.size(); i++) {

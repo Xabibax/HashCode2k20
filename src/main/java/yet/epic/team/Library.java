@@ -13,8 +13,7 @@ public class Library {
 
     private boolean hasSignedUp;
     private int dayOfSignUp;
-    private int restingDays;
-    private int restingScanForToday;
+    private long scanCapacity;
 
     private List<Book> books        = new ArrayList<>();
     private List<Book> scannedBooks = new ArrayList<>();
@@ -28,8 +27,7 @@ public class Library {
 
         this.hasSignedUp = lib.getHasSignedUp();
         this.dayOfSignUp = lib.getDayOfSignUp();
-        this.restingDays = lib.getRestingDays();
-        this.restingScanForToday = lib.getRestingScanForToday();
+        this.scanCapacity = lib.getScanCapacity();
 
         this.books = lib.getBooks();
 
@@ -55,15 +53,11 @@ public class Library {
         this.totalDayToScanBooks = totalDayToScanBooks;
         this.dayOfSignUp = 0;
 
-        this.restingScanForToday = this.nbShipBooks;
-
-        this.updateRestingDays();
+        this.updateScanCapacity();
     }
 
-    public int getRestingDays() throws Exception {
-        if (restingDays < 0)
-            throw new Exception("");
-        return restingDays;
+    public long getRestingDays() throws Exception {
+        return this.getScanCapacity()/this.getNbShipBooks();
     }
 
     public int getTotalDayToScanBooks() {
@@ -76,10 +70,6 @@ public class Library {
 
     public boolean isHasSignedUp() {
         return hasSignedUp;
-    }
-
-    public int getRestingScanForToday() {
-        return restingScanForToday;
     }
 
     public boolean getHasSignedUp() {
@@ -119,19 +109,23 @@ public class Library {
 
     public void signUp() throws Exception {
         this.hasSignedUp = true;
-        this.updateRestingDays();
+        this.updateScanCapacity();
     }
 
-    public void updateRestingDays() throws Exception {
-        if ((this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup + 1)) > 0) {
-            this.restingDays = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup + 1));
+    public void updateScanCapacity() throws Exception {
+        if ((this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup)) > 0) {
+            this.scanCapacity = (this.totalDayToScanBooks - (this.dayOfSignUp + this.nbDaysToSignup)) * this.getNbShipBooks();
         }
         else
-            this.restingDays = 0;
+            this.scanCapacity = 0;
+    }
+
+    public long getWorth() throws Exception {
+        return this.getScore() / (this.getScanCapacity());
     }
 
     public long getScanCapacity() {
-        return this.getNbShipBooks() * (this.restingDays - 1) + this.getRestingScanForToday();
+        return this.scanCapacity;
     }
 
     public void removeABook(Book book) {
@@ -153,14 +147,6 @@ public class Library {
         return result;
     }
 
-    public void setRestingDays(int restingDays) {
-        this.restingDays = restingDays;
-    }
-
-    public void setRestingScanForToday(int restingScanForToday) {
-        this.restingScanForToday = restingScanForToday;
-    }
-
     public int getDayOfSignUp() {
         return dayOfSignUp;
     }
@@ -170,14 +156,10 @@ public class Library {
     }
 
     public void scanABook() throws Exception {
-        if (this.restingScanForToday <= 0) {
-            this.restingScanForToday = this.getNbShipBooks() - 1;
-            this.restingDays --;
-            if (this.restingDays < 0)
-                throw new Exception("");
-        }
-        else
-            this.restingScanForToday--;
+        if (this.scanCapacity > 0)
+            this.scanCapacity--;
+        else if (this.scanCapacity < 0)
+            throw new Exception("Scan capacity negative in " + this);
     }
 
     public List<Book> getScannedBooks() {
@@ -187,7 +169,7 @@ public class Library {
     public void scanABook(Book book) throws Exception {
         if (!this.isSignedUp())
             this.signUp();
-        if (this.restingDays > 0) {
+        if (this.getScanCapacity() > 0) {
             scanABook();
             this.scannedBooks.add(book);
         }
@@ -224,7 +206,7 @@ public class Library {
      * @return
      */
     //**
-    
+
     @Override
     public String toString() {
         String result = "Library id : " +  this.getId() + System.lineSeparator() +
