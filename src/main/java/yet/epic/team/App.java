@@ -97,8 +97,8 @@ public class App
             //System.out.print("Remaining books : ");
 
             while (libraries.size() > 0) {
-                Library library = libraries.getMostValuableAndMostCapaLib();
-                while ((library.getRestingDays() > 0 || library.getScanCapacity() > 0 ) && library.getBooks().size() > 0) {
+                Library library = libraries.getWorthyLib();
+                while ( library.getScanCapacity() > 0 && library.getBooks().size() > 0) {
                     Book book = library.getMostValuableBook();
                     library.scanABook(book);
                     libraries.removeABookFromLibs(book);
