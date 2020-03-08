@@ -68,6 +68,30 @@ public class Book {
         }
         return result;
     }
+
+    public Library getMostRestDayAndMostShiplib() throws Exception {
+        Library result = this.libraries.get(0);
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            if (result.getRestingDays() <  this.libraries.get(i).getRestingDays())
+                if (result.getNbShipBooks() < this.libraries.get(i).getNbShipBooks())
+                    result =  this.libraries.get(i);
+        }
+        return result;
+    }
+
+    public Library getMostScanCapaLib() throws Exception {
+        Library result = this.libraries.get(0);
+        long scanCapa = result.getScanCapacity();
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            long currentLibScanCapa = this.libraries.get(i).getScanCapacity();
+            if (scanCapa <  currentLibScanCapa) {
+                result =  this.libraries.get(i);
+                scanCapa = currentLibScanCapa;
+            }
+        }
+        return result;
+    }
+
     public Library getFewerSignupDays() {
         Library result =  this.libraries.get(0);
         for (int i = 1; i <  this.libraries.size(); i++) {
@@ -89,7 +113,9 @@ public class Book {
     public Library getBestLib() throws Exception {
         //return getMostValuableLib();
         //return getFewerSignupDays();
-        return getMostRestDaylib();
+        //return getMostRestDaylib();
+        //return getMostRestDayAndMostShiplib();
+        return getMostScanCapaLib();
     }
 
     public void scanBook() throws Exception {

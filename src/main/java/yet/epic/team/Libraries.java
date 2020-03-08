@@ -84,6 +84,30 @@ public class Libraries {
         return result;
     }
 
+    public Library getQuickerSignUpLib() throws Exception {
+        Library result =  this.libraries.get(0);
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            if (result.getNbDaysToSignup() < ( this.libraries.get(i).getNbDaysToSignup()))
+                    result =  this.libraries.get(i);
+        }
+        return result;
+    }
+    public Library getQuickerSignUpAndMostShipLib() throws Exception {
+        Library result =  this.libraries.get(0);
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            if (result.getNbDaysToSignup() < ( this.libraries.get(i).getNbDaysToSignup()))
+                if (result.getNbShipBooks() < this.libraries.get(i).getNbShipBooks())
+                    result =  this.libraries.get(i);
+        }
+        return result;
+    }
+
+    public void signUpLib(Library library) throws Exception {
+        library.signUp();
+        this.updateDayOfSignup();
+
+    }
+
     public Library getLastSignedLibrary() {
         int lastDayOfSigneUp = Integer.MIN_VALUE;
         Library result = null;

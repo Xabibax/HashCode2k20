@@ -130,6 +130,10 @@ public class Library {
             this.restingDays = 0;
     }
 
+    public long getScanCapacity() {
+        return this.getNbShipBooks() * (this.restingDays - 1) + this.getRestingScanForToday();
+    }
+
     public void removeABook(Book book) {
         this.books.remove(book);
     }
