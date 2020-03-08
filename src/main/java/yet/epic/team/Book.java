@@ -7,7 +7,7 @@ public class Book {
     private int id;
     private int score;
 
-    private List<Integer> libraries;
+    private List<Library> libraries;
 
     public Book() {
         this.id = 0;
@@ -40,24 +40,73 @@ public class Book {
     }
 
     public void addALibrary(Library library) {
-        this.libraries.add(library.getId());
+        this.libraries.add(library);
     }
 
     public boolean isContainedBy(Library library) {
-        return this.libraries.contains(library.getId());
+        return this.libraries.contains(library);
     }
 
-    public List<Integer> getLibraries() {
+    public List<Library> getLibraries() {
         return libraries;
     }
 
+    public Library getMostRecentSignupLib() {
+        Library result = this.libraries.get(0);
+        for (int i = 1; i < this.libraries.size(); i++) {
+            if (result.getDayOfSignUp() > this.libraries.get(i).getDayOfSignUp())
+                result = this.libraries.get(i);
+        }
+        return result;
+    }
 
+    public Library getMostRestDaylib() throws Exception {
+        Library result = this.libraries.get(0);
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            if (result.getRestingDays() <  this.libraries.get(i).getRestingDays())
+                result =  this.libraries.get(i);
+        }
+        return result;
+    }
+    public Library getFewerSignupDays() {
+        Library result =  this.libraries.get(0);
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            if (result.getNbDaysToSignup() >  this.libraries.get(i).getNbDaysToSignup())
+                result =  this.libraries.get(i);
+        }
+        return result;
+    }
+    public Library getMostValuableLib() throws Exception {
+        Library result =  this.libraries.get(0);
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            if (result.getScore() < ( this.libraries.get(i).getScore()))
+                result =  this.libraries.get(i);
+        }
+        return result;
+    }
+
+    public Library getBestLib() throws Exception {
+        //return getMostValuableLib();
+        //return getFewerSignupDays();
+        return getMostRestDaylib();
+    }
+
+    public void scanBook() throws Exception {
+        if (this.libraries.size() > 0) {
+            Library bestCapaLib = getBestLib();
+            bestCapaLib.scanABook(this);
+        }
+    }
 
     @Override
     public String toString() {
+        String containedBy = "";
+        for (Library library : this.libraries) {
+            containedBy += library.getId() + " ";
+        }
         return  "Book id : " + this.getId()  + System.lineSeparator() +
                 "Score : " + this.getScore() + System.lineSeparator() +
-                "Contained by : " + this.libraries;
+                "Contained by : " + containedBy;
     }
     public String toDataSet() {
         return String.valueOf(this.getId());

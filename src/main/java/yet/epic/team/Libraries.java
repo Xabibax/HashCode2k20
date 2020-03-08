@@ -5,12 +5,10 @@ import java.util.List;
 
 public class Libraries {
     private int totalDayToScanBooks;
-    private int dayOfLastSignedLibrary;
     private List<Library> libraries;
 
     public Libraries(int totalDayToScanBooks, Books books, List<String> inputData) throws Exception {
         this.totalDayToScanBooks    = totalDayToScanBooks;
-        this.dayOfLastSignedLibrary = 0;
         this.libraries = new ArrayList<>();
         for (int i = 0; i < inputData.size() - 1; i += 2) {
             this.addALibrary(
@@ -20,7 +18,6 @@ public class Libraries {
     }
     public Libraries(Libraries libraries) {
         this.totalDayToScanBooks = libraries.getTotalDayToScanBooks();
-        this.dayOfLastSignedLibrary = libraries.getDayOfLastSignedLibrary();
         this.libraries = new ArrayList<>(libraries.getLibraries());
     }
 
@@ -44,14 +41,6 @@ public class Libraries {
         this.totalDayToScanBooks = totalDayToScanBooks;
     }
 
-    public int getDayOfLastSignedLibrary() {
-        return dayOfLastSignedLibrary;
-    }
-
-    public void setDayOfLastSignedLibrary(int dayOfLastSignedLibrary) {
-        this.dayOfLastSignedLibrary = dayOfLastSignedLibrary;
-    }
-
     public Library getLibrary(Integer i) {
         return this.libraries.get(i);
     }
@@ -70,37 +59,6 @@ public class Libraries {
         this.libraries.get(library.getId()).addABook(book);
     }
 
-    public Library getMostRestDaylib(List<Integer> libId) throws Exception {
-        Library result = this.libraries.get(libId.get(0));
-        for (int i = 1; i < libId.size(); i++) {
-            if (result.getRestingDays() < this.libraries.get(libId.get(i)).getRestingDays())
-                result = this.libraries.get(libId.get(i));
-        }
-        return result;
-    }
-    public Library getFewerSignupDays(List<Integer> libId) {
-        Library result = this.libraries.get(libId.get(0));
-        for (int i = 1; i < libId.size(); i++) {
-            if (result.getNbDaysToSignup() > this.libraries.get(libId.get(i)).getNbDaysToSignup())
-                result = this.libraries.get(libId.get(i));
-        }
-        return result;
-    }
-    public Library getMostValuableLib(List<Integer> libId) throws Exception {
-        Library result = this.libraries.get(libId.get(0));
-        for (int i = 1; i < libId.size(); i++) {
-            if (result.getScore() < this.libraries.get(libId.get(i)).getScore())
-                result = this.libraries.get(libId.get(i));
-        }
-        return result;
-    }
-
-    public Library getBestLib(List<Integer> libId) throws Exception {
-        //return getMostValuableLib(libId);
-        //return getFewerSignupDays(libId);
-        return getMostRestDaylib(libId);
-    }
-
     public Library getMostRecentSignupLib() {
         Library result = this.libraries.get(0);
         for (int i = 0; i < this.libraries.size(); i++) {
@@ -117,18 +75,24 @@ public class Libraries {
         }
     }
 
-    public void scanABook(Book book, Books books) throws Exception {
-        if (book.getLibraries().size() > 0) {
-            Library bestCapaLib = getBestLib(book.getLibraries());
-            if (!this.libraries.get(bestCapaLib.getId()).isSignedUp())
-                this.dayOfLastSignedLibrary += this.libraries.get(bestCapaLib.getId()).getNbDaysToSignup();
-            this.libraries.get(bestCapaLib.getId()).scanABook(book);
-            for (int i = 0; i < this.libraries.size(); i++) {
-                if (!this.libraries.get(i).isSignedUp())
-                    this.libraries.get(i).setDayOfSignUp(this.dayOfLastSignedLibrary);
+    public Library getLastSignedLibrary() {
+        int lastDayOfSigneUp = Integer.MIN_VALUE;
+        Library result = null;
+
+        for (int i = 0; i < this.libraries.size(); i++) {
+            if (lastDayOfSigneUp < this.libraries.get(i).getDayOfSignUp() && this.libraries.get(i).isSignedUp()) {
+                result = this.libraries.get(i);
+                lastDayOfSigneUp = result.getDayOfSignUp();
             }
         }
+        return result;
     }
 
-
+    public void updateDayOfSignup() {
+        Library lastSignedupLib = this .getLastSignedLibrary();
+        for (int i = 0; i < this.libraries.size(); i++) {
+            if (!this.libraries.get(i).isSignedUp())
+                this.libraries.get(i).setDayOfSignUp(lastSignedupLib.getDayOfSignUp() + lastSignedupLib.getNbDaysToSignup());
+        }
+    }
 }

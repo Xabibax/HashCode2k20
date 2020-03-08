@@ -6,10 +6,8 @@ import java.util.List;
 public class OutputDataSet {
 
     private List<Library> libraries;
-    private Books books;
 
-    public OutputDataSet(Books books) {
-        this.books = new Books(books);
+    public OutputDataSet() {
         this.libraries = new ArrayList<>();
     }
 
@@ -36,37 +34,14 @@ public class OutputDataSet {
         }
     }
 
-    public void addABook(Library library, Book book) throws Exception {
-        if (!this.containLib(library))
-            this.addALibrary(library);
-        for (int i = 0; i < this.libraries.size(); i++) {
-            if (this.libraries.get(i).getId() == library.getId()) {
-                this.libraries.get(i).addABook(book);
-                this.libraries.get(i).scanABook();
-            }
-        }
-    }
-
-    public boolean asBeenScanned(Book book) {
-        for (int i = 0; i < this.libraries.size(); i++) {
-            for (int j = 0; j < this.libraries.get(i).getBooks().size(); j++) {
-                if (this.libraries.get(i).getBooks().get(j).getId() == book.getId())
-                    return true;
-            }
-        }
-        return false;
-    }
-
     public List<Library> getLibraries() {
         return this.libraries;
     }
 
     public int getScore() throws Exception {
         int result = 0;
-        for (int i = 0; i < this.libraries.size(); i++) {
-            for (int j = 0; j < this.libraries.get(i).getScannedBooks().size(); j++) {
-                result += this.libraries.get(i).getScore();
-            }
+        for (Library library : this.libraries) {
+            result += library.getScanScore();
         }
         return result;
     }
@@ -104,10 +79,10 @@ public class OutputDataSet {
         // First Line //
         result += "Number of Libraries : " + this.libraries.size() + System.lineSeparator();
         // Libraries lines //
-        for (int i = 0; i < this.libraries.size(); i++) {
+        for (Library library : this.libraries) {
 
             // First library line
-            result += this.libraries.get(i).toDebug();
+            result += library.toDebug();
         }
         return result;
 

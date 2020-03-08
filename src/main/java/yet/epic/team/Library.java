@@ -47,7 +47,9 @@ public class Library {
         this.books = new ArrayList<>();
         String[] bookContained = inputData.get(1).split(" ");
         for (int i = 0; i < bookContained.length; i++) {
-            this.books.add(books.getBookById(Integer.parseInt(bookContained[i])));
+            Book book = books.getBookById(Integer.parseInt(bookContained[i]));
+            book.addALibrary(this);
+            this.books.add(book);
         }
 
         this.totalDayToScanBooks = totalDayToScanBooks;
@@ -139,6 +141,13 @@ public class Library {
         }
         return result;
     }
+    public int getScanScore() throws Exception {
+        int result = 0;
+        for (Book book : this.scannedBooks) {
+            result += book.getScore();
+        }
+        return result;
+    }
 
     public void setRestingDays(int restingDays) {
         this.restingDays = restingDays;
@@ -222,10 +231,10 @@ public class Library {
     public String toDataSetBooksBis() {
         String result = "";
         for (int i = 0; i < this.scannedBooks.size() - 1; i++) {
-            result += this.scannedBooks.get(i) + " ";
+            result += this.scannedBooks.get(i).toDataSet() + " ";
         }
         if (this.scannedBooks.size() > 0)
-            result += this.scannedBooks.get(this.scannedBooks.size() - 1);
+            result += this.scannedBooks.get(this.scannedBooks.size() - 1).toDataSet();
         return result;
     }
 

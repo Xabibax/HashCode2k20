@@ -89,7 +89,7 @@ public class App
 
             Books books                 = new Books(inputDataSet.getBooks());
             Libraries libraries         = inputDataSet.getLibraries();
-            OutputDataSet outputDataSet = new OutputDataSet(inputDataSet.getBooks());
+            OutputDataSet outputDataSet = new OutputDataSet();
 
             List<Book> bookNotScanned = new ArrayList<>();
             List<Book> bookScanned = new ArrayList<>();
@@ -98,9 +98,10 @@ public class App
             while (books.size() > 0) {
                 Book mostValuableBook = books.getMostValuableBook();
                 //System.out.print(books.size());
-                libraries.scanABook(mostValuableBook, books);
+                mostValuableBook.scanBook();
                 books.removeABook(mostValuableBook);
                 libraries.removeABookFromLibs(mostValuableBook);
+                libraries.updateDayOfSignup();
             }
 
             while (libraries.size() > 0) {
