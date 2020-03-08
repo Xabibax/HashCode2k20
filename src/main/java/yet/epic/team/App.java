@@ -94,48 +94,16 @@ public class App
             Libraries libraries         = inputDataSet.getLibraries();
             OutputDataSet outputDataSet = new OutputDataSet();
 
-            List<Book> bookNotScanned = new ArrayList<>();
-            List<Book> bookScanned = new ArrayList<>();
             //System.out.print("Remaining books : ");
 
-            Libraries librariesToSignUp = new Libraries(libraries);
-            long maxShipBook = 0;
-            for (int j = 0; j < libraries.size(); j++) {
-                if (maxShipBook < libraries.getLibrary(i).getNbShipBooks())
-                    maxShipBook = libraries.getLibrary(i).getNbShipBooks();
-            }
-
-            // Signup Most Valuable Lib first
-//            while (librariesToSignUp.size() > 0) {
-//                Library mostValuableLibrary = librariesToSignUp.getMostValuableLib();
-//                mostValuableLibrary.signUp();
-//                libraries.updateDayOfSignup();
-//                librariesToSignUp.removeALibrary(mostValuableLibrary);
-//            }
-//          Signup quicker Lib first
-//            while (librariesToSignUp.size() > 0) {
-//                Library quickerSignUpLib = librariesToSignUp.getQuickerSignUpAndMostShipLib();
-//                libraries.signUpLib(quickerSignUpLib);
-//                librariesToSignUp.removeALibrary(quickerSignUpLib);
-//            }
-            //          Signup quicker Lib first
-//            while (librariesToSignUp.size() > 0) {
-//                Library quickerSignUpLib = librariesToSignUp.getQuickerSignUpLib();
-//                libraries.signUpLib(quickerSignUpLib);
-//                librariesToSignUp.removeALibrary(quickerSignUpLib);
-//            }
-
-            while (books.size() > 0) {
-                Book mostValuableBook = books.getMostValuableBook();
-                //System.out.print(books.size());
-                mostValuableBook.scanBook();
-                libraries.updateDayOfSignup();
-                books.removeABook(mostValuableBook);
-                libraries.removeABookFromLibs(mostValuableBook);
-            }
-
             while (libraries.size() > 0) {
-                Library library = libraries.getMostRecentSignupLib();
+                Library library = libraries.getMostValuableLib();
+                while ((library.getRestingDays() > 0 || library.getRestingScanForToday() > 0 ) && library.getBooks().size() > 0) {
+                    Book book = library.getMostValuableBook();
+                    library.scanABook(book);
+                    libraries.removeABookFromLibs(book);
+                }
+                libraries.updateDayOfSignup();
                 if (library.getScannedBooks().size() > 0)
                     outputDataSet.addALibrary(library);
                 libraries.removeALibrary(library);

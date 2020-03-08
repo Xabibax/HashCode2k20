@@ -210,6 +210,21 @@ public class Library {
     }
 
 
+    public Book getMostValuableBook() {
+        Book result = this.books.get(0);
+        for (int i = 1; i < this.books.size(); i++) {
+            if (result.getScore() < this.books.get(i).getScore())
+                result = this.books.get(i);
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @return
+     */
+    //**
+    
     @Override
     public String toString() {
         String result = "Library id : " +  this.getId() + System.lineSeparator() +

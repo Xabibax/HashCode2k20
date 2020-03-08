@@ -123,9 +123,10 @@ public class Libraries {
 
     public void updateDayOfSignup() {
         Library lastSignedupLib = this .getLastSignedLibrary();
-        for (int i = 0; i < this.libraries.size(); i++) {
-            if (!this.libraries.get(i).isSignedUp())
-                this.libraries.get(i).setDayOfSignUp(lastSignedupLib.getDayOfSignUp() + lastSignedupLib.getNbDaysToSignup());
-        }
+        if (lastSignedupLib != null)
+            for (int i = 0; i < this.libraries.size(); i++) {
+                if (!this.libraries.get(i).isSignedUp())
+                    this.libraries.get(i).setDayOfSignUp(lastSignedupLib.getDayOfSignUp() + lastSignedupLib.getNbDaysToSignup());
+            }
     }
 }
