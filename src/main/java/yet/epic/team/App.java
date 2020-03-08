@@ -95,13 +95,20 @@ public class App
             List<Book> bookScanned = new ArrayList<>();
             //System.out.print("Remaining books : ");
 
+            Libraries librariesToSignUp = new Libraries(libraries);
+            while (librariesToSignUp.size() > 0) {
+                Library mostValuableLibrary = librariesToSignUp.getMostValuableLib();
+                mostValuableLibrary.signUp();
+                libraries.updateDayOfSignup();
+                librariesToSignUp.removeALibrary(mostValuableLibrary);
+            }
+
             while (books.size() > 0) {
                 Book mostValuableBook = books.getMostValuableBook();
                 //System.out.print(books.size());
                 mostValuableBook.scanBook();
                 books.removeABook(mostValuableBook);
                 libraries.removeABookFromLibs(mostValuableBook);
-                libraries.updateDayOfSignup();
             }
 
             while (libraries.size() > 0) {

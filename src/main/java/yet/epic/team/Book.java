@@ -76,6 +76,7 @@ public class Book {
         }
         return result;
     }
+
     public Library getMostValuableLib() throws Exception {
         Library result =  this.libraries.get(0);
         for (int i = 1; i <  this.libraries.size(); i++) {

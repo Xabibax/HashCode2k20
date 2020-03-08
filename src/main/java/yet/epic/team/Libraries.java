@@ -75,6 +75,15 @@ public class Libraries {
         }
     }
 
+    public Library getMostValuableLib() throws Exception {
+        Library result =  this.libraries.get(0);
+        for (int i = 1; i <  this.libraries.size(); i++) {
+            if (result.getScore() < ( this.libraries.get(i).getScore()))
+                result =  this.libraries.get(i);
+        }
+        return result;
+    }
+
     public Library getLastSignedLibrary() {
         int lastDayOfSigneUp = Integer.MIN_VALUE;
         Library result = null;
