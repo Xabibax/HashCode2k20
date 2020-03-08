@@ -121,7 +121,13 @@ public class Library {
     }
 
     public long getWorth() throws Exception {
-        return this.getScore() / (this.getScanCapacity());
+        if (this.books.size() > 0)
+            if (this.getNbShipBooks() < this.books.size())
+                return this.getScore() / (this.getNbDaysToSignup() + (this.books.size()/this.getNbShipBooks()));
+            else
+                return this.getScore() / (this.getNbDaysToSignup() + this.getNbShipBooks());
+        else
+            return 0;
     }
 
     public long getScanCapacity() {

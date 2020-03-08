@@ -65,7 +65,7 @@ public class App
     }
 
     public static void main( String[] args ) throws Exception {
-
+        System.out.println(1/2);
         System.out.println("Int max value : " + Integer.MAX_VALUE + System.lineSeparator()
                 + "Long max value : " + Long.MAX_VALUE);
         for (int i = 0; i < inputDataSetLocation.length; i++) {
