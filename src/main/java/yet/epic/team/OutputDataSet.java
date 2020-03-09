@@ -13,6 +13,10 @@ public class OutputDataSet {
         this.libraries = new ArrayList<>();
     }
 
+    public OutputDataSet(OutputDataSet outputDataSet) {
+        this.libraries = new ArrayList<>(outputDataSet.getLibraries());
+    }
+
     public boolean containLib(@NotNull Library library) {
         for (int i = 0; i < this.libraries.size(); i++) {
             if (this.libraries.get(i).getId() == library.getId())

@@ -8,11 +8,10 @@ import java.util.List;
 
 public class Libraries {
     private int totalDayToScanBooks;
-    private List<Library> libraries;
+    private List<Library> libraries = new ArrayList<>();
 
     public Libraries(int totalDayToScanBooks, @NotNull Books books, @NotNull List<String> inputData) throws Exception {
         this.totalDayToScanBooks = totalDayToScanBooks;
-        this.libraries = new ArrayList<>();
         for (int i = 0; i < inputData.size() - 1; i += 2) {
             this.addALibrary(
                     new Library(i / 2, totalDayToScanBooks, books, inputData.subList(i, i + 2))
@@ -22,7 +21,9 @@ public class Libraries {
 
     public Libraries(@NotNull Libraries libraries) {
         this.totalDayToScanBooks = libraries.getTotalDayToScanBooks();
-        this.libraries = new ArrayList<>(libraries.getLibraries());
+        for (int i = 0; i < libraries.getLibraries().size(); i++) {
+            this.libraries.add(new Library(libraries.getLibrary(i)));
+        }
     }
 
     public List<Library> getLibraries() {

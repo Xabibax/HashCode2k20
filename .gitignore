@@ -10,3 +10,5 @@ target/
 HashCode2k20.zip
 
 *.debug
+
+*.scores

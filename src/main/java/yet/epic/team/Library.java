@@ -139,8 +139,8 @@ public class Library {
 
     public long getWorth() throws Exception {
         if (this.books.size() > 0 && this.getScanCapacity() > 0) {
-            long divid = (long)this.getNbDaysToSignup() + (long)App.noise + ((long)this.books.size() / this.getScanCapacity());
-            return divid != 0 ? (long)this.getScore() / divid : (long)this.getScore();
+            long divid = (long)App.noise + (long)this.getNbDaysToSignup() + (long)this.books.size() / (long)this.getScanCapacity();
+            return divid != 0 ? (long) this.getScore() / divid : (long)this.getScore();
         }
         return Long.MIN_VALUE;
     }

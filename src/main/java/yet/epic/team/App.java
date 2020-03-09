@@ -25,14 +25,14 @@ public class App {
             "/f_libraries_of_the_world.txt",
     };
 
-    private static Pair<Integer, Integer> interval = new Pair(-100,100);
+    private static Pair<Integer, Integer> interval = new Pair(-1,1);
     private static List<Integer> intervalValues = new ArrayList<>();
 
     public static int noise;
 
     public static Iterator<Integer> noiseIterator;
 
-    private static OutputDataSet tmpOutputDataSet = null;
+    private static List<OutputDataSet> outputdataSets = new ArrayList<>();
 
     @NotNull
     private static InputDataSet getInputDataSet(@NotNull String filePath) throws Exception {
@@ -57,7 +57,6 @@ public class App {
         try {
             os = new FileOutputStream(new File(outputPath));
             os.write(outputDataSet.getBytes(), 0, outputDataSet.length());
-            os.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -69,14 +68,26 @@ public class App {
         }
     }
 
-    public static void initializeTheMagic() {
+    public static OutputDataSet getBestOutput() throws Exception {
+        if (outputdataSets.size() > 0) {
+            OutputDataSet result = outputdataSets.get(0);
+            for (int i = 1; i < outputdataSets.size(); i++) {
+                if (result.getScore() < outputdataSets.get(i).getScore())
+                    result = outputdataSets.get(i);
+            }
+            return result;
+        }
+        throw new Exception("No output to evaluate");
+    }
+
+    public static void initialiseNoise() {
         if (intervalValues.size() == 0) {
-            for (int i = interval.getKey(); i < interval.getValue(); i++) {
+            for (int i = interval.getKey(); i <= interval.getValue(); i++) {
                 intervalValues.add(i);
             }
         }
         noiseIterator = new Iterator<Integer>() {
-            public int cursor = 0;
+            public int cursor = -1;
 
             @Override
             public boolean hasNext() {
@@ -94,28 +105,15 @@ public class App {
 
     public static void main(String[] args) throws Exception  {
         for (int i = 0; i < inputDataSetLocation.length; i++) {
-            initializeTheMagic();
-            switch (i) {
-                case 0:
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
-                case 5:
-                    break;
-            }
-            InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") +
-                    inputDataSetLocation[i]);
+            initialiseNoise();
+            OutputDataSet outputDataSet;
+            do {
+                InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") +
+                        inputDataSetLocation[i]);
 
-            Libraries libraries = inputDataSet.getLibraries();
-            while (noiseIterator.hasNext()) {
+                noiseIterator.next();
                 Libraries libraries = new Libraries(inputDataSet.getLibraries());
-
+                outputDataSet = new OutputDataSet();
                 while (libraries.size() > 0) {
                     Library library = libraries.getWorthyLib();
                     while (library.getScanCapacity() > 0 && library.getBooks().size() > 0) {
@@ -129,17 +127,12 @@ public class App {
                     libraries.removeALibrary(library);
                 }
 
-                if (tmpOutputDataSet == null)
-                    tmpOutputDataSet = outputDataSet;
-                else if (tmpOutputDataSet.getScore() < outputDataSet.getScore())
-                    tmpOutputDataSet = outputDataSet;
+                outputdataSets.add(new OutputDataSet(outputDataSet));
 
-                if (noiseIterator.hasNext()) {
-                    noiseIterator.next();
-                }
-            }
-            outputDataSet = tmpOutputDataSet;
-            tmpOutputDataSet = null;
+            } while (noiseIterator.hasNext());
+
+            outputDataSet = getBestOutput();
+            outputdataSets = new ArrayList<>();
 
             System.out.println("The predicted score for " + inputDataSetLocation[i] + " is : \t\t\t\t" +
                     NumberFormat.getIntegerInstance().format(outputDataSet.getScore()));
@@ -148,7 +141,6 @@ public class App {
                     inputDataSetLocation[i] + ".out");
             writeOutputDataSet(outputDataSet.toDebug(), System.getProperty("user.dir") +
                     inputDataSetLocation[i] + ".debug");
-
         }
     }
 }
