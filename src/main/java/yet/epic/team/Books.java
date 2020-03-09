@@ -1,12 +1,14 @@
 package yet.epic.team;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Books {
     private List<Book> books;
 
-    public Books(String inputData) {
+    public Books(@NotNull String inputData) {
         String[] books = inputData.split(" ");
         this.books = new ArrayList<>();
         for (int i = 0; i < books.length; i++) {
@@ -14,7 +16,7 @@ public class Books {
         }
     }
 
-    public Books(Books books) {
+    public Books(@NotNull Books books) {
         this.books = new ArrayList<>();
         for (int i = 0; i < books.size(); i++) {
             this.books.add(books.getBook(i));
@@ -29,9 +31,9 @@ public class Books {
         return this.books.size();
     }
 
-    public Book removeABook(Book book) throws Exception {
+    public Book removeABook(@NotNull Book book) throws Exception {
         for (int i = 0; i < this.books.size(); i++) {
-            if (this.books.get(i).getId() ==book.getId())
+            if (this.books.get(i).getId() == book.getId())
                 return this.books.remove(i);
         }
         throw new Exception("ERROR : Try to remove an Uncontained book.");
@@ -49,6 +51,7 @@ public class Books {
     public Book getBook(Integer i) {
         return this.books.get(i);
     }
+
     public Book getBookById(Integer i) throws Exception {
         for (int j = 0; j < this.books.size(); j++) {
             if (this.books.get(j).getId() == i)
@@ -56,11 +59,12 @@ public class Books {
         }
         throw new Exception("This book id is unknown");
     }
+
     public List<Book> getBooks() {
         return this.books;
     }
 
-    public void addLibToBook(Book book, Library library) {
+    public void addLibToBook(@NotNull Book book, Library library) {
         this.books.get(book.getId()).addALibrary(library);
     }
 

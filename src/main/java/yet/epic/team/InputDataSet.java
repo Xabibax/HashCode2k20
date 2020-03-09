@@ -1,5 +1,7 @@
 package yet.epic.team;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.NumberFormat;
 import java.util.List;
 
@@ -9,18 +11,12 @@ public class InputDataSet {
     private Books books;
     private Libraries libraries;
 
-    public InputDataSet(List<String> inputData) throws Exception {
-        String [] firstLine = inputData.get(0).split(" ");
-        int nbBooks     = Integer.parseInt(firstLine[0]);
+    public InputDataSet(@NotNull List<String> inputData) throws Exception {
+        String[] firstLine = inputData.get(0).split(" ");
+        int nbBooks = Integer.parseInt(firstLine[0]);
         int nbLibraries = Integer.parseInt(firstLine[1]);
-        this.nbOfDays   = Integer.parseInt(firstLine[2]);
+        this.nbOfDays = Integer.parseInt(firstLine[2]);
         this.books = new Books(inputData.get(1));
-        int maxScore = 0;
-        String[] booksScore = inputData.get(1).split(" ");
-        for (int i = 0; i < booksScore.length; i++) {
-            maxScore += Integer.parseInt(booksScore[i]);
-        }
-        System.out.println("From the input data the maximum score possible is " + NumberFormat.getIntegerInstance().format(maxScore) + " points");
         this.libraries = new Libraries(this.nbOfDays, this.books, inputData.subList(2, inputData.size()));
         if (nbBooks != this.books.size() || nbLibraries != this.libraries.size())
             throw new Exception("There a difference between Input file and intern variables");
@@ -50,9 +46,10 @@ public class InputDataSet {
         return libraries;
     }
 
+    @NotNull
     @Override
     public String toString() {
-        String result =  this.getNbBooks() + " " + this.getNbLibrairies() + " " + this.getNbOfDays() +
+        String result = this.getNbBooks() + " " + this.getNbLibrairies() + " " + this.getNbOfDays() +
                 System.lineSeparator();
         for (int i = 0; i < this.getBooks().size() - 1; i++) {
             result += this.getBooks().getBook(i).getScore() + " ";

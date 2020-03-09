@@ -1,5 +1,7 @@
 package yet.epic.team;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,14 +13,15 @@ public class OutputDataSet {
         this.libraries = new ArrayList<>();
     }
 
-    public boolean containLib(Library library) {
+    public boolean containLib(@NotNull Library library) {
         for (int i = 0; i < this.libraries.size(); i++) {
             if (this.libraries.get(i).getId() == library.getId())
                 return true;
         }
         return false;
     }
-    public boolean containBook(Book book) {
+
+    public boolean containBook(@NotNull Book book) {
         for (int i = 0; i < this.libraries.size(); i++) {
             for (int j = 0; j < this.libraries.get(i).getBooks().size(); j++) {
                 if (this.libraries.get(i).getBooks().get(j).getId() == book.getId())
@@ -28,7 +31,7 @@ public class OutputDataSet {
         return false;
     }
 
-    public void addALibrary(Library library) throws Exception {
+    public void addALibrary(@NotNull Library library) throws Exception {
         if (!this.containLib(library)) {
             this.libraries.add(library);
         }
@@ -46,34 +49,38 @@ public class OutputDataSet {
         return result;
     }
 
+    @NotNull
     @Override
     public String toString() {
         String result = "";
         // First Line //
-        result +=  this.libraries.size() + System.lineSeparator();
+        result += this.libraries.size() + System.lineSeparator();
         // Libraries lines //
         for (int i = 0; i < this.libraries.size(); i++) {
             // First library line
-            result += this.libraries.get(i).getId() +  " " + this.libraries.get(i).getBooks().size() + System.lineSeparator();
+            result += this.libraries.get(i).getId() + " " + this.libraries.get(i).getBooks().size() + System.lineSeparator();
             // Second library line
             result += this.libraries.get(i).toDataSetBooks() + System.lineSeparator();
         }
         return result;
     }
+
+    @NotNull
     public String toDataSet() {
         String result = "";
         // First Line //
-        result +=  this.libraries.size() + System.lineSeparator();
+        result += this.libraries.size() + System.lineSeparator();
         // Libraries lines //
         for (int i = 0; i < this.libraries.size(); i++) {
             // First library line
-            result += this.libraries.get(i).getId() +  " " + this.libraries.get(i).getScannedBooks().size() + System.lineSeparator();
+            result += this.libraries.get(i).getId() + " " + this.libraries.get(i).getScannedBooks().size() + System.lineSeparator();
             // Second library line
             result += this.libraries.get(i).toDataSetBooksBis() + System.lineSeparator();
         }
         return result;
     }
 
+    @NotNull
     public String toDebug() throws Exception {
         String result = "";
         // First Line //

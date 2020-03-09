@@ -1,5 +1,8 @@
 package yet.epic.team;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,16 +10,17 @@ public class Libraries {
     private int totalDayToScanBooks;
     private List<Library> libraries;
 
-    public Libraries(int totalDayToScanBooks, Books books, List<String> inputData) throws Exception {
-        this.totalDayToScanBooks    = totalDayToScanBooks;
+    public Libraries(int totalDayToScanBooks, @NotNull Books books, @NotNull List<String> inputData) throws Exception {
+        this.totalDayToScanBooks = totalDayToScanBooks;
         this.libraries = new ArrayList<>();
         for (int i = 0; i < inputData.size() - 1; i += 2) {
             this.addALibrary(
-                new Library(i/2, totalDayToScanBooks, books, inputData.subList(i, i + 2))
+                    new Library(i / 2, totalDayToScanBooks, books, inputData.subList(i, i + 2))
             );
         }
     }
-    public Libraries(Libraries libraries) {
+
+    public Libraries(@NotNull Libraries libraries) {
         this.totalDayToScanBooks = libraries.getTotalDayToScanBooks();
         this.libraries = new ArrayList<>(libraries.getLibraries());
     }
@@ -25,12 +29,12 @@ public class Libraries {
         return libraries;
     }
 
-    public void addALibrary(Library library) {
-        this.libraries.add(library);
-    }
-
     public void setLibraries(List<Library> libraries) {
         this.libraries = libraries;
+    }
+
+    public void addALibrary(Library library) {
+        this.libraries.add(library);
     }
 
     public int getTotalDayToScanBooks() {
@@ -55,7 +59,7 @@ public class Libraries {
         }
     }
 
-    public void addBookToLib(Library library, Book book) {
+    public void addBookToLib(@NotNull Library library, Book book) {
         this.libraries.get(library.getId()).addABook(book);
     }
 
@@ -68,7 +72,7 @@ public class Libraries {
         return result;
     }
 
-    public void removeALibrary(Library library) {
+    public void removeALibrary(@NotNull Library library) {
         for (int i = 0; i < this.libraries.size(); i++) {
             if (library.getId() == this.libraries.get(i).getId())
                 this.libraries.remove(i);
@@ -76,57 +80,59 @@ public class Libraries {
     }
 
     public Library getMostValuableLib() throws Exception {
-        Library result =  this.libraries.get(0);
-        for (int i = 1; i <  this.libraries.size(); i++) {
-            if (result.getScore() < ( this.libraries.get(i).getScore()))
-                result =  this.libraries.get(i);
+        Library result = this.libraries.get(0);
+        for (int i = 1; i < this.libraries.size(); i++) {
+            if (result.getScore() < (this.libraries.get(i).getScore()))
+                result = this.libraries.get(i);
         }
         return result;
     }
 
     public Library getMostValuableAndMostCapaLib() throws Exception {
-        Library result =  this.libraries.get(0);
-        for (int i = 1; i <  this.libraries.size(); i++) {
-            if (result.getScore() < ( this.libraries.get(i).getScore()))
+        Library result = this.libraries.get(0);
+        for (int i = 1; i < this.libraries.size(); i++) {
+            if (result.getScore() < (this.libraries.get(i).getScore()))
                 if (result.getScanCapacity() < this.libraries.get(i).getScanCapacity())
-                    result =  this.libraries.get(i);
+                    result = this.libraries.get(i);
         }
         return result;
     }
 
     public Library getWorthyLib() throws Exception {
-        Library result =  this.libraries.get(0);
-        for (int i = 1; i <  this.libraries.size(); i++) {
-            if (result.getWorth() < ( this.libraries.get(i).getWorth()))
-                result =  this.libraries.get(i);
+        Library result = this.libraries.get(0);
+        for (int i = 1; i < this.libraries.size(); i++) {
+            if (result.getWorth() < (this.libraries.get(i).getWorth()))
+                result = this.libraries.get(i);
         }
         return result;
     }
 
-    public Library getQuickerSignUpLib() throws Exception {
-        Library result =  this.libraries.get(0);
-        for (int i = 1; i <  this.libraries.size(); i++) {
-            if (result.getNbDaysToSignup() < ( this.libraries.get(i).getNbDaysToSignup()))
-                    result =  this.libraries.get(i);
+    public Library getQuickerSignUpLib() {
+        Library result = this.libraries.get(0);
+        for (int i = 1; i < this.libraries.size(); i++) {
+            if (result.getNbDaysToSignup() < (this.libraries.get(i).getNbDaysToSignup()))
+                result = this.libraries.get(i);
         }
         return result;
     }
-    public Library getQuickerSignUpAndMostShipLib() throws Exception {
-        Library result =  this.libraries.get(0);
-        for (int i = 1; i <  this.libraries.size(); i++) {
-            if (result.getNbDaysToSignup() < ( this.libraries.get(i).getNbDaysToSignup()))
+
+    public Library getQuickerSignUpAndMostShipLib() {
+        Library result = this.libraries.get(0);
+        for (int i = 1; i < this.libraries.size(); i++) {
+            if (result.getNbDaysToSignup() < (this.libraries.get(i).getNbDaysToSignup()))
                 if (result.getNbShipBooks() < this.libraries.get(i).getNbShipBooks())
-                    result =  this.libraries.get(i);
+                    result = this.libraries.get(i);
         }
         return result;
     }
 
-    public void signUpLib(Library library) throws Exception {
+    public void signUpLib(@NotNull Library library) throws Exception {
         library.signUp();
         this.updateDayOfSignup();
 
     }
 
+    @Nullable
     public Library getLastSignedLibrary() {
         int lastDayOfSigneUp = Integer.MIN_VALUE;
         Library result = null;
@@ -141,7 +147,7 @@ public class Libraries {
     }
 
     public void updateDayOfSignup() {
-        Library lastSignedupLib = this .getLastSignedLibrary();
+        Library lastSignedupLib = this.getLastSignedLibrary();
         if (lastSignedupLib != null)
             for (int i = 0; i < this.libraries.size(); i++) {
                 if (!this.libraries.get(i).isSignedUp())

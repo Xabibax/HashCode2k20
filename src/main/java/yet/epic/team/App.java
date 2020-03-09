@@ -1,15 +1,21 @@
 package yet.epic.team;
 
+import javafx.util.Pair;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
 
 
-public class App 
-{
+public class App {
+    @NotNull
     private static String[] inputDataSetLocation = {
             "/a_example.txt",
             "/b_read_on.txt",
@@ -18,11 +24,18 @@ public class App
             "/e_so_many_books.txt",
             "/f_libraries_of_the_world.txt",
     };
-    private static String inputDataSet;
 
+    private static Pair<Integer, Integer> interval = new Pair(-11,11);
+    private static List<Integer> intervalValues = new ArrayList<>();
 
+    public static int magicValue;
 
-    private static InputDataSet getInputDataSet(String filePath) throws Exception {
+    public static Iterator<Integer> magicIterator;
+
+    private static OutputDataSet tmpOutputDataSet = null;
+
+    @NotNull
+    private static InputDataSet getInputDataSet(@NotNull String filePath) throws Exception {
 
         File myObj = new File(filePath);
         Scanner myReader = new Scanner(myObj);
@@ -39,7 +52,7 @@ public class App
         return result;
     }
 
-    private static void writeOutputDataSet(String outputDataSet, String outputPath) {
+    private static void writeOutputDataSet(@NotNull String outputDataSet, @NotNull String outputPath) {
         OutputStream os = null;
         try {
             os = new FileOutputStream(new File(outputPath));
@@ -47,7 +60,7 @@ public class App
             os.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             try {
                 os.close();
             } catch (IOException e) {
@@ -56,18 +69,31 @@ public class App
         }
     }
 
-    public static int getScore(List<Book> books) {
-        int result = 0;
-        for (int j = 0; j < books.size(); j++) {
-            result += (books.get(j).getScore());
+    public static void initializeTheMagic() {
+        if (intervalValues.size() == 0) {
+            for (int i = interval.getKey(); i < interval.getValue(); i++) {
+                intervalValues.add(i);
+            }
         }
-        return result;
+        magicIterator = new Iterator<Integer>() {
+            public int cursor = 0;
+
+            @Override
+            public boolean hasNext() {
+                return cursor < intervalValues.size() - 1 ;
+            }
+
+            @Override
+            public Integer next() {
+                magicValue = intervalValues.get(++cursor);
+                return magicValue;
+            }
+        };
+        magicValue = intervalValues.get(0);
     }
 
-    public static void main( String[] args ) throws Exception {
-        System.out.println(1/2);
-        System.out.println("Int max value : " + Integer.MAX_VALUE + System.lineSeparator()
-                + "Long max value : " + Long.MAX_VALUE);
+    public static void main(String[] args) throws Exception {
+        initializeTheMagic();
         for (int i = 0; i < inputDataSetLocation.length; i++) {
 
             switch (i) {
@@ -84,21 +110,15 @@ public class App
                 case 5:
                     break;
             }
-            System.out.println("Parsing " + inputDataSetLocation[i]);
             InputDataSet inputDataSet = getInputDataSet(System.getProperty("user.dir") +
                     inputDataSetLocation[i]);
 
-            int maxScore = getScore(inputDataSet.getBooks().getBooks());
-
-            Books books                 = new Books(inputDataSet.getBooks());
-            Libraries libraries         = inputDataSet.getLibraries();
+            Libraries libraries = inputDataSet.getLibraries();
             OutputDataSet outputDataSet = new OutputDataSet();
-
-            //System.out.print("Remaining books : ");
 
             while (libraries.size() > 0) {
                 Library library = libraries.getWorthyLib();
-                while ( library.getScanCapacity() > 0 && library.getBooks().size() > 0) {
+                while (library.getScanCapacity() > 0 && library.getBooks().size() > 0) {
                     Book book = library.getMostValuableBook();
                     library.scanABook(book);
                     libraries.removeABookFromLibs(book);
@@ -109,9 +129,24 @@ public class App
                 libraries.removeALibrary(library);
             }
 
-            System.out.println("The predicted score for " + inputDataSetLocation[i] + " is : " +
-                    NumberFormat.getIntegerInstance().format(outputDataSet.getScore()) + System.lineSeparator());
+            if (tmpOutputDataSet == null)
+                tmpOutputDataSet = outputDataSet;
+            else if (tmpOutputDataSet.getScore() < outputDataSet.getScore())
+                tmpOutputDataSet = outputDataSet;
 
+            if (magicIterator.hasNext()) {
+                magicIterator.next();
+                i--;
+                continue;
+            }
+            else
+                initializeTheMagic();
+
+            outputDataSet = tmpOutputDataSet;
+            tmpOutputDataSet = null;
+
+            System.out.println("The predicted score for " + inputDataSetLocation[i] + " is : \t\t\t\t" +
+                    NumberFormat.getIntegerInstance().format(outputDataSet.getScore()));
 
             writeOutputDataSet(outputDataSet.toDataSet(), System.getProperty("user.dir") +
                     inputDataSetLocation[i] + ".out");
