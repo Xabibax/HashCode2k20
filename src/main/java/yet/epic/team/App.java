@@ -25,12 +25,12 @@ public class App {
             "/f_libraries_of_the_world.txt",
     };
 
-    private static Pair<Integer, Integer> interval = new Pair(-11,11);
+    private static Pair<Integer, Integer> interval = new Pair(-100,100);
     private static List<Integer> intervalValues = new ArrayList<>();
 
-    public static int magicValue;
+    public static int noise;
 
-    public static Iterator<Integer> magicIterator;
+    public static Iterator<Integer> noiseIterator;
 
     private static OutputDataSet tmpOutputDataSet = null;
 
@@ -75,7 +75,7 @@ public class App {
                 intervalValues.add(i);
             }
         }
-        magicIterator = new Iterator<Integer>() {
+        noiseIterator = new Iterator<Integer>() {
             public int cursor = 0;
 
             @Override
@@ -85,17 +85,16 @@ public class App {
 
             @Override
             public Integer next() {
-                magicValue = intervalValues.get(++cursor);
-                return magicValue;
+                noise = intervalValues.get(++cursor);
+                return noise;
             }
         };
-        magicValue = intervalValues.get(0);
+        noise = intervalValues.get(0);
     }
 
-    public static void main(String[] args) throws Exception {
-        initializeTheMagic();
+    public static void main(String[] args) throws Exception  {
         for (int i = 0; i < inputDataSetLocation.length; i++) {
-
+            initializeTheMagic();
             switch (i) {
                 case 0:
                     break;
@@ -114,34 +113,31 @@ public class App {
                     inputDataSetLocation[i]);
 
             Libraries libraries = inputDataSet.getLibraries();
-            OutputDataSet outputDataSet = new OutputDataSet();
+            while (noiseIterator.hasNext()) {
+                Libraries libraries = new Libraries(inputDataSet.getLibraries());
 
-            while (libraries.size() > 0) {
-                Library library = libraries.getWorthyLib();
-                while (library.getScanCapacity() > 0 && library.getBooks().size() > 0) {
-                    Book book = library.getMostValuableBook();
-                    library.scanABook(book);
-                    libraries.removeABookFromLibs(book);
+                while (libraries.size() > 0) {
+                    Library library = libraries.getWorthyLib();
+                    while (library.getScanCapacity() > 0 && library.getBooks().size() > 0) {
+                        Book book = library.getMostValuableBook();
+                        library.scanABook(book);
+                        libraries.removeABookFromLibs(book);
+                    }
+                    libraries.updateDayOfSignup();
+                    if (library.getScannedBooks().size() > 0)
+                        outputDataSet.addALibrary(library);
+                    libraries.removeALibrary(library);
                 }
-                libraries.updateDayOfSignup();
-                if (library.getScannedBooks().size() > 0)
-                    outputDataSet.addALibrary(library);
-                libraries.removeALibrary(library);
+
+                if (tmpOutputDataSet == null)
+                    tmpOutputDataSet = outputDataSet;
+                else if (tmpOutputDataSet.getScore() < outputDataSet.getScore())
+                    tmpOutputDataSet = outputDataSet;
+
+                if (noiseIterator.hasNext()) {
+                    noiseIterator.next();
+                }
             }
-
-            if (tmpOutputDataSet == null)
-                tmpOutputDataSet = outputDataSet;
-            else if (tmpOutputDataSet.getScore() < outputDataSet.getScore())
-                tmpOutputDataSet = outputDataSet;
-
-            if (magicIterator.hasNext()) {
-                magicIterator.next();
-                i--;
-                continue;
-            }
-            else
-                initializeTheMagic();
-
             outputDataSet = tmpOutputDataSet;
             tmpOutputDataSet = null;
 

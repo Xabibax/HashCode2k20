@@ -138,17 +138,11 @@ public class Library {
     }
 
     public long getWorth() throws Exception {
-        if (this.books.size() > 0)
-            if ((this.getNbDaysToSignup() + App.magicValue + (this.books.size()) / this.getScanCapacity()) == 0)
-                return this.getScore() /
-                        (this.getNbDaysToSignup() + (this.books.size()) /
-                                this.getScanCapacity());
-            else
-                return this.getScore() /
-                        (this.getNbDaysToSignup() + App.magicValue + (this.books.size()) /
-                                this.getScanCapacity());
-        else
-            return 0;
+        if (this.books.size() > 0 && this.getScanCapacity() > 0) {
+            long divid = (long)this.getNbDaysToSignup() + (long)App.noise + ((long)this.books.size() / this.getScanCapacity());
+            return divid != 0 ? (long)this.getScore() / divid : (long)this.getScore();
+        }
+        return Long.MIN_VALUE;
     }
 
     public long getScanCapacity() {
